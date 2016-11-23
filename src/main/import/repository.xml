@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <content xmlns:j="http://www.jahia.org/jahia/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0">
     <modules jcr:primaryType="jnt:modules">
-        <jcr-oauth-data-mapper j:dependencies="default"
+        <jcr-oauth-data-mapper j:dependencies="default jahia-oauth"
                              j:modulePriority="0"
                              j:moduleType="module"
                              j:title="JCR OAuth data mapper"
@@ -13,6 +13,13 @@
                 <templates j:rootTemplatePath="/base" jcr:primaryType="jnt:templatesFolder">
                     <files jcr:primaryType="jnt:folder"/>
                     <contents jcr:primaryType="jnt:contentFolder"/>
+                    <jcr-oauth-view j:defaultTemplate="false"
+                            j:hiddenTemplate="true"
+                            jcr:primaryType="jnt:contentTemplate">
+                        <pagecontent jcr:primaryType="jnt:contentList">
+                            <jcroauthview jcr:primaryType="joant:jcrOAuthView"/>
+                        </pagecontent>
+                    </jcr-oauth-view>
                 </templates>
                 
             </jcr-oauth-data-mapper>
