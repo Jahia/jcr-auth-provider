@@ -24,28 +24,35 @@
         <md-card-title-text>
             <span class="md-headline">JCR OAuth data mapper</span>
         </md-card-title-text>
+        <md-card-actions layout="row">
+            <md-card-icon-actions>
+                <md-button class="md-fab" ng-click="saveMapperSettings()">
+                    <md-icon>save</md-icon>
+                </md-button>
+            </md-card-icon-actions>
+        </md-card-actions>
     </md-card-title>
 
     <md-card-content>
-        <md-switch ng-model="isActivate" ng-change="toggleMapper()">
+        <md-switch ng-model="isActivate">
             Activate
         </md-switch>
         <md-input-container>
             <label>Field from connector</label>
-            <md-select ng-model="selectedFieldFromConnector">
+            <md-select ng-model="selectedPropertyFromConnector">
                 <md-optgroup>
-                    <md-option ng-repeat="field in connectorFields" ng-value="field" ng-show="isNotMapped(field, 'connector')">
-                        {{field}}
+                    <md-option ng-repeat="(propertyKey, propertyValue) in connectorProperties" ng-value="propertyKey" ng-show="isNotMapped(propertyKey, 'connector')">
+                        {{ propertyKey }} ({{ propertyValue['valueType'] }})
                     </md-option>
                 </md-optgroup>
             </md-select>
         </md-input-container>
         <md-input-container>
             <label>Field from mapper</label>
-            <md-select ng-model="selectedFieldFromMapper">
+            <md-select ng-model="selectedPropertyFromMapper">
                 <md-optgroup>
-                    <md-option ng-repeat="field in mapperFields" ng-value="field" ng-show="isNotMapped(field, 'mapper')">
-                        {{field}}
+                    <md-option ng-repeat="(propertyKey, propertyValue) in mapperProperties" ng-value="propertyKey" ng-show="isNotMapped(propertyKey, 'mapper')">
+                        {{ propertyKey }} ({{ propertyValue['valueType'] }}) <span ng-if="propertyValue.mandatory" style="color: red">mandatory</span>
                     </md-option>
                 </md-optgroup>
             </md-select>
@@ -55,7 +62,7 @@
         </md-button>
 
         <md-list>
-            <md-list-item ng-repeat="mapping in mappedFields track by $index">
+            <md-list-item ng-repeat="mapping in mapping track by $index">
                 <md-input-container class="md-block">
                     <label>Connector</label>
                     <input ng-value="mapping.connector" disabled>

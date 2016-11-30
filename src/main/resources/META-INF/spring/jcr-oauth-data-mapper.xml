@@ -6,4 +6,53 @@
                            http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
 
     <osgi:reference id="jahiaOAuth" interface="org.jahia.modules.jahiaoauth.service.JahiaOAuth" availability="mandatory"/>
+
+    <bean id="dataLoader" class="org.jahia.modules.jcroauthdatamapper.DataLoader" init-method="onStart">
+        <property name="jahiaOAuth" ref="jahiaOAuth"/>
+        <property name="mapperKey" value="jcrOAuthDataMapper"/>
+        <property name="mapperProperties">
+            <map>
+                <entry key="j:gender">
+                    <map>
+                        <entry key="valueType" value="String"/>
+                        <entry key="mandatory">
+                            <value type="boolean">true</value>
+                        </entry>
+                    </map>
+                </entry>
+                <entry key="j:firstName">
+                    <map>
+                        <entry key="valueType" value="String"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
+                <entry key="j:lastName">
+                    <map>
+                        <entry key="valueType" value="String"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
+                <entry key="j:organization">
+                    <map>
+                        <entry key="valueType" value="String"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
+                <entry key="j:email">
+                    <map>
+                        <entry key="valueType" value="String"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
+            </map>
+        </property>
+    </bean>
 </beans>

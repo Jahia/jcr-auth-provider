@@ -1,31 +1,79 @@
 angular.module('JahiaOAuth')
     .controller('jcrOAuthDataMapperController', ['$scope', '$mdToast', '$routeParams', 'settingsService', function($scope, $mdToast, $routeParams, settingsService) {
         $scope.isActivate = false;
-        $scope.connectorFields = ['firstName', 'lastName', 'positions', 'location'];
-        $scope.mapperFields = ['firstName', 'lastName', 'positions', 'location'];
-        $scope.mappedFields = [];
-        $scope.selectedFieldFromConnector = '';
-        $scope.selectedFieldFromMapper = '';
+        $scope.connectorProperties = {};
+        $scope.mapperProperties = {};
+        $scope.mapping = [];
+        $scope.selectedPropertyFromConnector = '';
+        $scope.selectedPropertyFromMapper = '';
 
-        $scope.toggleMapper = function() {
-            console.log($scope.isActivate);
-            settingsService.toggleMapper({ connectorNodeName: $routeParams.connectorNodeName, nodeName: 'jcrOAuthDataMapper', activate: $scope.isActivate })
+        settingsService.getMapperMapping({
+            serviceName: $routeParams.connectorServiceName,
+            mapperKey: 'jcrOAuthDataMapper'
+        }).success(function (data) {
+            console.log(data);
+            if (!angular.equals(data, {})) {
+                $scope.isActivate = data.isActivate;
+                $scope.mapping = data.mapping;
+            }
+        });
+
+        settingsService.getConnectorProperties({
+            serviceName: $routeParams.connectorServiceName
+        }).success(function(data) {
+            $scope.connectorProperties = data;
+        });
+
+        settingsService.getMapperProperties({
+            mapperKey: 'jcrOAuthDataMapper'
+        }).success(function(data) {
+            $scope.mapperProperties = data;
+        });
+
+        $scope.saveMapperSettings = function() {
+            var mandatoryPropertyAreMapped = true;
+            angular.forEach($scope.mapperProperties, function(value, key) {
+                if (value.mandatory) {
+                    if ($scope.isNotMapped(key, 'mapper')) {
+                        mandatoryPropertyAreMapped = false
+                    }
+                }
+            });
+            if (!mandatoryPropertyAreMapped) {
+                $mdToast.show($mdToast.simple()
+                    .textContent('Missing mandatory properties!')
+                    .position('bottom right'));
+                return false;
+            }
+
+            settingsService.setMapperMapping({
+                serviceName: $routeParams.connectorServiceName,
+                mapperKey: 'jcrOAuthDataMapper',
+                nodeType: 'joant:jcrOAuthSettings',
+                isActivate: $scope.isActivate,
+                mapping: $scope.mapping
+            })
         };
 
         $scope.addMapping = function() {
-            $scope.mappedFields.push({connector: $scope.selectedFieldFromConnector, mapper: $scope.selectedFieldFromMapper});
-
-            $scope.selectedFieldFromConnector = '';
-            $scope.selectedFieldFromMapper = '';
+            if ($scope.selectedPropertyFromConnector && $scope.selectedPropertyFromMapper) {
+                $scope.mapping.push({
+                    connector: $scope.selectedPropertyFromConnector,
+                    mapper: $scope.selectedPropertyFromMapper
+                });
+                $scope.selectedPropertyFromConnector = '';
+                $scope.selectedPropertyFromMapper = '';
+                console.log($scope.mapping);
+            }
         };
 
         $scope.removeMapping = function(index) {
-            $scope.mappedFields.splice(index, 1);
+            $scope.mapping.splice(index, 1);
         };
 
         $scope.isNotMapped = function(field, key) {
             var isNotMapped = true;
-            angular.forEach($scope.mappedFields, function(entry) {
+            angular.forEach($scope.mapping, function(entry) {
                 if (entry[key] == field) {
                     isNotMapped = false;
                 }
