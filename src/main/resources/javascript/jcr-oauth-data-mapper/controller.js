@@ -11,7 +11,6 @@ angular.module('JahiaOAuth')
             serviceName: $routeParams.connectorServiceName,
             mapperKey: 'jcrOAuthDataMapper'
         }).success(function (data) {
-            console.log(data);
             if (!angular.equals(data, {})) {
                 $scope.isActivate = data.isActivate;
                 $scope.mapping = data.mapping;
@@ -52,7 +51,14 @@ angular.module('JahiaOAuth')
                 nodeType: 'joant:jcrOAuthSettings',
                 isActivate: $scope.isActivate,
                 mapping: $scope.mapping
-            })
+            }).success(function(data) {
+                $mdToast.show($mdToast.simple().textContent('SUCCESS!'));
+            }).error(function(data) {
+                $mdToast.show($mdToast.simple()
+                    .textContent(data.error)
+                    .theme('errorToast')
+                    .position('bottom right'));
+            });
         };
 
         $scope.addMapping = function() {
@@ -63,7 +69,6 @@ angular.module('JahiaOAuth')
                 });
                 $scope.selectedPropertyFromConnector = '';
                 $scope.selectedPropertyFromMapper = '';
-                console.log($scope.mapping);
             }
         };
 
