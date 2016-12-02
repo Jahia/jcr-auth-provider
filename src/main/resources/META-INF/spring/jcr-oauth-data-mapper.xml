@@ -10,13 +10,14 @@
     <bean id="dataLoader" class="org.jahia.modules.jcroauthdatamapper.DataLoader" init-method="onStart">
         <property name="jahiaOAuth" ref="jahiaOAuth"/>
         <property name="mapperKey" value="jcrOAuthDataMapper"/>
+        <property name="mapperActionName" value="jcrOAuthAction"/>
         <property name="mapperProperties">
             <map>
                 <entry key="j:gender">
                     <map>
                         <entry key="valueType" value="String"/>
                         <entry key="mandatory">
-                            <value type="boolean">true</value>
+                            <value type="boolean">false</value>
                         </entry>
                     </map>
                 </entry>
@@ -54,5 +55,10 @@
                 </entry>
             </map>
         </property>
+    </bean>
+
+    <bean class="org.jahia.modules.jcroauthdatamapper.action.JCROAuth">
+        <property name="name" value="jcrOAuthAction"/>
+        <property name="requiredPermission" value="canSetupJahiaOAuth"/>
     </bean>
 </beans>
