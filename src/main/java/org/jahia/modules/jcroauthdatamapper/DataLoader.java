@@ -10,12 +10,12 @@ import java.util.Map;
 public class DataLoader {
 
     private String mapperKey;
-    private String mapperActionName;
+    private String mapperServiceName;
     private JahiaOAuth jahiaOAuth;
     private Map<String, Map<String, Object>> mapperProperties;
 
     public void onStart() {
-        jahiaOAuth.addDataToOAuthMapperPropertiesMap(mapperProperties, mapperKey, mapperActionName);
+        jahiaOAuth.addDataToOAuthMapperPropertiesMap(mapperProperties, mapperKey, mapperServiceName);
     }
 
     public void setMapperProperties(Map<String, Map<String, Object>> mapperProperties) {
@@ -30,7 +30,7 @@ public class DataLoader {
         this.mapperKey = mapperKey;
     }
 
-    public void setMapperActionName(String mapperActionName) {
-        this.mapperActionName = mapperActionName;
+    public void setMapperServiceName(String mapperServiceName) {
+        this.mapperServiceName = mapperServiceName;
     }
 }
