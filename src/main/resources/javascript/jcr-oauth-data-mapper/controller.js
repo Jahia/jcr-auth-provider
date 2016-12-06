@@ -9,7 +9,7 @@ angular.module('JahiaOAuth')
 
         settingsService.getMapperMapping({
             serviceName: $routeParams.connectorServiceName,
-            mapperKey: 'jcrOAuthDataMapper'
+            mapperServiceName: 'jcrOAuthDataMapper'
         }).success(function (data) {
             if (!angular.equals(data, {})) {
                 $scope.isActivate = data.isActivate;
@@ -24,7 +24,7 @@ angular.module('JahiaOAuth')
         });
 
         settingsService.getMapperProperties({
-            mapperKey: 'jcrOAuthDataMapper'
+            mapperServiceName: 'jcrOAuthDataMapper'
         }).success(function(data) {
             $scope.mapperProperties = data;
         });
@@ -47,7 +47,7 @@ angular.module('JahiaOAuth')
 
             settingsService.setMapperMapping({
                 serviceName: $routeParams.connectorServiceName,
-                mapperKey: 'jcrOAuthDataMapper',
+                mapperServiceName: 'jcrOAuthDataMapper',
                 nodeType: 'joant:jcrOAuthSettings',
                 isActivate: $scope.isActivate,
                 mapping: $scope.mapping

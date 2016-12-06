@@ -10,7 +10,6 @@
 
     <bean id="dataLoader" class="org.jahia.modules.jcroauthdatamapper.DataLoader" init-method="onStart">
         <property name="jahiaOAuth" ref="jahiaOAuth"/>
-        <property name="mapperKey" value="jcrOAuthDataMapper"/>
         <property name="mapperServiceName" value="jcrOAuthDataMapper"/>
         <property name="mapperProperties">
             <map>
@@ -50,7 +49,7 @@
                     <map>
                         <entry key="valueType" value="String"/>
                         <entry key="mandatory">
-                            <value type="boolean">false</value>
+                            <value type="boolean">true</value>
                         </entry>
                     </map>
                 </entry>
@@ -60,6 +59,15 @@
 
     <bean id="jcrOAuthDataMapper" class="org.jahia.modules.jcroauthdatamapper.impl.JCROAuthDataMapperImpl">
         <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
+        <property name="jcrTemplate" ref="jcrTemplate"/>
+    </bean>
+
+    <bean id="jcrOAuthValve" class="org.jahia.params.valves.jcroauth.JCROAuthValve">
+        <property name="jahiaOAuth" ref="jahiaOAuth"/>
+        <property name="dataLoader" ref="dataLoader"/>
+        <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
+        <property name="jcrTemplate" ref="jcrTemplate"/>
+        <property name="cookieAuthConfig" ref="cookieAuthConfig"/>
     </bean>
 
     <osgi:service ref="jcrOAuthDataMapper" interface="org.jahia.modules.jahiaoauth.service.Mapper">
