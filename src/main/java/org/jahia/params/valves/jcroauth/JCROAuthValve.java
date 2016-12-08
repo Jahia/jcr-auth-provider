@@ -7,7 +7,6 @@ import org.jahia.params.valves.*;
 import org.jahia.pipelines.PipelineException;
 import org.jahia.pipelines.valves.ValveContext;
 import org.jahia.services.SpringContextSingleton;
-import org.jahia.services.content.JCRTemplate;
 import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.preferences.user.UserPreferencesHelper;
 import org.jahia.services.usermanager.JahiaUser;
@@ -29,6 +28,7 @@ import java.util.Map;
  */
 public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
     private static final Logger logger = LoggerFactory.getLogger(JCROAuthValve.class);
+    private static String VALVE_RESULT = "login_valve_result";
 
     private JahiaUserManagerService jahiaUserManagerService;
     private JahiaOAuth jahiaOAuth;
@@ -66,18 +66,19 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
         String userId = (String) mapperResult.get("j:email");
         JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, siteKey);
 
+
         if (userNode != null) {
             if (!userNode.isAccountLocked()) {
                 ok = true;
             } else {
                 logger.warn("Login failed: account for user " + userNode.getName() + " is locked.");
-                request.setAttribute("login_valve_result", "account_locked");
+                request.setAttribute(VALVE_RESULT, "account_locked");
             }
         } else {
             if (logger.isDebugEnabled()) {
                 logger.debug("Login failed. Unknown username " + userId);
             }
-            request.setAttribute("login_valve_result", "unknown_user");
+            request.setAttribute(VALVE_RESULT, "unknown_user");
         }
 
         if (ok) {
@@ -97,7 +98,7 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
             // if there were saved session attributes, we restore them here.
             restoreSessionAttributes(request, savedSessionAttributes);
 
-            request.setAttribute("login_valve_result", "ok");
+            request.setAttribute(VALVE_RESULT, "ok");
             authContext.getSessionFactory().setCurrentUser(jahiaUser);
 
             // do a switch to the user's preferred language
