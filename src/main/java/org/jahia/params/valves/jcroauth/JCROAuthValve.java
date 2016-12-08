@@ -7,18 +7,22 @@ import org.jahia.params.valves.*;
 import org.jahia.pipelines.PipelineException;
 import org.jahia.pipelines.valves.ValveContext;
 import org.jahia.services.SpringContextSingleton;
-import org.jahia.services.content.JCRCallback;
-import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
 import org.jahia.services.content.decorator.JCRUserNode;
+import org.jahia.services.preferences.user.UserPreferencesHelper;
 import org.jahia.services.usermanager.JahiaUser;
 import org.jahia.services.usermanager.JahiaUserManagerService;
+import org.jahia.settings.SettingsBean;
+import org.jahia.utils.LanguageCodeConverters;
+import org.jahia.utils.Patterns;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * @author dgaillard
@@ -27,12 +31,14 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
     private static final Logger logger = LoggerFactory.getLogger(JCROAuthValve.class);
 
     private JahiaUserManagerService jahiaUserManagerService;
-    private JCRTemplate jcrTemplate;
     private JahiaOAuth jahiaOAuth;
     private DataLoader dataLoader;
     private CookieAuthConfig cookieAuthConfig;
 
+    private String preserveSessionAttributes = null;
+
     public class LoginEvent extends BaseLoginEvent {
+        private static final long serialVersionUID = 8966163034180261958L;
 
         public LoginEvent(Object source, JahiaUser jahiaUser, AuthValveContext authValveContext) {
             super (source, jahiaUser, authValveContext);
@@ -41,42 +47,100 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
 
     @Override
     public void invoke(Object context, ValveContext valveContext) throws PipelineException {
-        final AuthValveContext authContext = (AuthValveContext) context;
-        final HttpServletRequest request = authContext.getRequest();
+        AuthValveContext authContext = (AuthValveContext) context;
+        HttpServletRequest request = authContext.getRequest();
 
         if (authContext.getSessionFactory().getCurrentUser() != null) {
+            valveContext.invokeNext(context);
             return;
         }
 
-        final HashMap<String, Object> mapperResult = jahiaOAuth.getMapperResults(dataLoader.getMapperServiceName(), request.getSession().getId());
-        if (mapperResult == null) {
+        HashMap<String, Object> mapperResult = jahiaOAuth.getMapperResults(dataLoader.getMapperServiceName(), request.getSession().getId());
+        if (mapperResult == null || !request.getParameterMap().containsKey("site")) {
+            valveContext.invokeNext(context);
             return;
         }
 
-        try {
-            jcrTemplate.doExecuteWithSystemSessionAsUser((JahiaUser) null, Constants.EDIT_WORKSPACE, request.getLocale(), new JCRCallback<Object>() {
-                @Override
-                public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                    String userId = (String) mapperResult.get("j:email");
-                    JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
+        boolean ok = false;
+        String siteKey = request.getParameter("site");
+        String userId = (String) mapperResult.get("j:email");
+        JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, siteKey);
 
-                    request.getSession().setAttribute(Constants.SESSION_USER, userNode.getJahiaUser());
-                    request.setAttribute("login_valve_result", "ok");
-                    authContext.getSessionFactory().setCurrentUser(userNode.getJahiaUser());
+        if (userNode != null) {
+            if (!userNode.isAccountLocked()) {
+                ok = true;
+            } else {
+                logger.warn("Login failed: account for user " + userNode.getName() + " is locked.");
+                request.setAttribute("login_valve_result", "account_locked");
+            }
+        } else {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Login failed. Unknown username " + userId);
+            }
+            request.setAttribute("login_valve_result", "unknown_user");
+        }
 
-                    String useCookie = request.getParameter("useCookie");
-                    if ((useCookie != null) && ("on".equals(useCookie))) {
-                        // the user has indicated he wants to use cookie authentication
-                        CookieAuthValveImpl.createAndSendCookie(authContext, userNode, cookieAuthConfig);
-                    }
+        if (ok) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("User " + userNode + " logged in.");
+            }
 
-                    SpringContextSingleton.getInstance().publishEvent(new JCROAuthValve.LoginEvent(this, userNode.getJahiaUser(), authContext));
+            // if there are any attributes to conserve between session, let's copy them into a map first
+            Map<String, Object> savedSessionAttributes = preserveSessionAttributes(request);
 
-                    return null;
+            JahiaUser jahiaUser = userNode.getJahiaUser();
+
+            if (request.getSession(false) != null) {
+                request.getSession().invalidate();
+            }
+
+            // if there were saved session attributes, we restore them here.
+            restoreSessionAttributes(request, savedSessionAttributes);
+
+            request.setAttribute("login_valve_result", "ok");
+            authContext.getSessionFactory().setCurrentUser(jahiaUser);
+
+            // do a switch to the user's preferred language
+            if (SettingsBean.getInstance().isConsiderPreferredLanguageAfterLogin()) {
+                Locale preferredUserLocale = UserPreferencesHelper.getPreferredLocale(userNode, LanguageCodeConverters.resolveLocaleForGuest(request));
+                request.getSession().setAttribute(Constants.SESSION_LOCALE, preferredUserLocale);
+            }
+
+            String useCookie = request.getParameter("useCookie");
+            if ((useCookie != null) && ("on".equals(useCookie))) {
+                // the user has indicated he wants to use cookie authentication
+                CookieAuthValveImpl.createAndSendCookie(authContext, userNode, cookieAuthConfig);
+            }
+
+            SpringContextSingleton.getInstance().publishEvent(new JCROAuthValve.LoginEvent(this, jahiaUser, authContext));
+        } else {
+            valveContext.invokeNext(context);
+        }
+    }
+
+    private Map<String, Object> preserveSessionAttributes(HttpServletRequest httpServletRequest) {
+        Map<String,Object> savedSessionAttributes = new HashMap<String,Object>();
+        if ((preserveSessionAttributes != null) &&
+                (httpServletRequest.getSession(false) != null) &&
+                (preserveSessionAttributes.length() > 0)) {
+            String[] sessionAttributeNames = Patterns.TRIPLE_HASH.split(preserveSessionAttributes);
+            HttpSession session = httpServletRequest.getSession(false);
+            for (String sessionAttributeName : sessionAttributeNames) {
+                Object attributeValue = session.getAttribute(sessionAttributeName);
+                if (attributeValue != null) {
+                    savedSessionAttributes.put(sessionAttributeName, attributeValue);
                 }
-            });
-        } catch (RepositoryException e) {
-            logger.error(e.getMessage());
+            }
+        }
+        return savedSessionAttributes;
+    }
+
+    private void restoreSessionAttributes(HttpServletRequest httpServletRequest, Map<String, Object> savedSessionAttributes) {
+        if (savedSessionAttributes.size() > 0) {
+            HttpSession session = httpServletRequest.getSession();
+            for (Map.Entry<String,Object> savedSessionAttribute : savedSessionAttributes.entrySet()) {
+                session.setAttribute(savedSessionAttribute.getKey(), savedSessionAttribute.getValue());
+            }
         }
     }
 
@@ -90,10 +154,6 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
 
     public void setJahiaUserManagerService(JahiaUserManagerService jahiaUserManagerService) {
         this.jahiaUserManagerService = jahiaUserManagerService;
-    }
-
-    public void setJcrTemplate(JCRTemplate jcrTemplate) {
-        this.jcrTemplate = jcrTemplate;
     }
 
     public void setCookieAuthConfig(CookieAuthConfig cookieAuthConfig) {

@@ -48,9 +48,7 @@ public class JCROAuthDataMapperImpl implements Mapper {
                             logger.error("Could not set user property", e.getMessage());
                         }
                     }
-
                     session.save();
-
                     return null;
                 }
             });

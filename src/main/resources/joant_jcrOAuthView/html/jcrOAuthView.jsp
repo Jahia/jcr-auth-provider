@@ -19,7 +19,7 @@
 
 <template:addResources type="javascript" resources="jcr-oauth-data-mapper/controller.js"/>
 
-<md-card ng-controller="jcrOAuthDataMapperController">
+<md-card ng-controller="jcrOAuthDataMapperController" class="ng-cloak">
     <md-card-title>
         <md-card-title-text>
             <span class="md-headline">JCR OAuth data mapper</span>
@@ -77,4 +77,4 @@
             </md-list-item>
         </md-list>
     </md-card-content>
-<md-card>
+</md-card>

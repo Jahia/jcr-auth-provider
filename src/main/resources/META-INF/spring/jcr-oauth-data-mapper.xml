@@ -53,6 +53,38 @@
                         </entry>
                     </map>
                 </entry>
+                <entry key="j:title">
+                    <map>
+                        <entry key="valueType" value="String"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
+                <entry key="j:function">
+                    <map>
+                        <entry key="valueType" value="String"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
+                <entry key="j:about">
+                    <map>
+                        <entry key="valueType" value="String"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
+                <entry key="j:picture">
+                    <map>
+                        <entry key="valueType" value="WeakReference"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
             </map>
         </property>
     </bean>
@@ -66,7 +98,6 @@
         <property name="jahiaOAuth" ref="jahiaOAuth"/>
         <property name="dataLoader" ref="dataLoader"/>
         <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
-        <property name="jcrTemplate" ref="jcrTemplate"/>
         <property name="cookieAuthConfig" ref="cookieAuthConfig"/>
     </bean>
 
