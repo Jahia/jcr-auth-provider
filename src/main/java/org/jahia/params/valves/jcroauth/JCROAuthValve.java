@@ -55,7 +55,8 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
             return;
         }
 
-        HashMap<String, Object> mapperResult = jahiaOAuth.getMapperResults(dataLoader.getMapperServiceName(), request.getSession().getId());
+        String originalSessionId = request.getSession().getId();
+        HashMap<String, Object> mapperResult = jahiaOAuth.getMapperResults(dataLoader.getMapperServiceName(), originalSessionId);
         if (mapperResult == null || !request.getParameterMap().containsKey("site")) {
             valveContext.invokeNext(context);
             return;
@@ -95,6 +96,10 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
                 request.getSession().invalidate();
             }
 
+            if (!originalSessionId.equals(request.getSession().getId())) {
+                jahiaOAuth.updateCacheEntry(originalSessionId, request.getSession().getId());
+            }
+
             // if there were saved session attributes, we restore them here.
             restoreSessionAttributes(request, savedSessionAttributes);
 
@@ -120,7 +125,7 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
     }
 
     private Map<String, Object> preserveSessionAttributes(HttpServletRequest httpServletRequest) {
-        Map<String,Object> savedSessionAttributes = new HashMap<String,Object>();
+        Map<String,Object> savedSessionAttributes = new HashMap<>();
         if ((preserveSessionAttributes != null) &&
                 (httpServletRequest.getSession(false) != null) &&
                 (preserveSessionAttributes.length() > 0)) {
