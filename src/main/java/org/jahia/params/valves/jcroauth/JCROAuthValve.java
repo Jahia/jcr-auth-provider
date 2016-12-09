@@ -144,7 +144,7 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
     private void restoreSessionAttributes(HttpServletRequest httpServletRequest, Map<String, Object> savedSessionAttributes) {
         if (savedSessionAttributes.size() > 0) {
             HttpSession session = httpServletRequest.getSession();
-            for (Map.Entry<String,Object> savedSessionAttribute : savedSessionAttributes.entrySet()) {
+            for (Map.Entry<String, Object> savedSessionAttribute : savedSessionAttributes.entrySet()) {
                 session.setAttribute(savedSessionAttribute.getKey(), savedSessionAttribute.getValue());
             }
         }
@@ -164,5 +164,9 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
 
     public void setCookieAuthConfig(CookieAuthConfig cookieAuthConfig) {
         this.cookieAuthConfig = cookieAuthConfig;
+    }
+
+    public void setPreserveSessionAttributes(String preserveSessionAttributes) {
+        this.preserveSessionAttributes = preserveSessionAttributes;
     }
 }

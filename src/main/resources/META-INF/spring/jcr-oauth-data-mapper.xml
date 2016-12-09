@@ -131,6 +131,7 @@
         <property name="dataLoader" ref="dataLoader"/>
         <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
         <property name="cookieAuthConfig" ref="cookieAuthConfig"/>
+        <property name="preserveSessionAttributes" value="${preserveSessionAttributesOnLogin:wemSessionId}" />
     </bean>
 
     <osgi:service ref="jcrOAuthDataMapper" interface="org.jahia.modules.jahiaoauth.service.Mapper">
