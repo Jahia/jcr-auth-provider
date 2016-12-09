@@ -85,6 +85,38 @@
                         </entry>
                     </map>
                 </entry>
+                <entry key="j:linkedInID">
+                    <map>
+                        <entry key="valueType" value="WeakReference"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
+                <entry key="j:twitterID">
+                    <map>
+                        <entry key="valueType" value="WeakReference"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
+                <entry key="j:facebookID">
+                    <map>
+                        <entry key="valueType" value="WeakReference"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
+                <entry key="j:income">
+                    <map>
+                        <entry key="valueType" value="WeakReference"/>
+                        <entry key="mandatory">
+                            <value type="boolean">false</value>
+                        </entry>
+                    </map>
+                </entry>
             </map>
         </property>
     </bean>
