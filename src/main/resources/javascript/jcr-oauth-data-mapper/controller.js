@@ -1,5 +1,7 @@
 angular.module('JahiaOAuth')
-    .controller('jcrOAuthDataMapperController', ['$scope', '$mdToast', '$routeParams', 'settingsService', function($scope, $mdToast, $routeParams, settingsService) {
+    .controller('jcrOAuthDataMapperController',
+        ['$scope', '$mdToast', '$routeParams', 'settingsService', 'i18nService',
+        function($scope, $mdToast, $routeParams, settingsService, i18nService) {
         $scope.isActivate = false;
         $scope.connectorProperties = {};
         $scope.mapperProperties = {};
@@ -84,5 +86,13 @@ angular.module('JahiaOAuth')
                 }
             });
             return isNotMapped;
+        };
+
+        $scope.getConnectorI18n = function(value) {
+            return i18nService.message($routeParams.connectorServiceName + '.label.' + value);
+        };
+
+        $scope.getMapperI18n = function(value) {
+            return i18nService.message('jcrOAuthDataMapper.label.' + value.replace(':', '_'));
         }
     }]);

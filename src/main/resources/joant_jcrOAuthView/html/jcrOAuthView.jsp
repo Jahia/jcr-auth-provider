@@ -17,12 +17,25 @@
 <%--@elvariable id="currentResource" type="org.jahia.services.render.Resource"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
+<template:addResources type="javascript" resources="i18n/jcr-oauth-data-mapper-i18n_${currentResource.locale}.js" var="i18nJSFile"/>
+<c:if test="${empty i18nJSFile}">
+    <template:addResources type="javascript" resources="i18n/jcr-oauth-data-mapper-i18n_en.js"/>
+</c:if>
+
+<template:addResources>
+    <script>
+        for (var key in jcroai18n) {
+            jahiaOAuthContext.i18n[key] = jcroai18n[key];
+        }
+    </script>
+</template:addResources>
+
 <template:addResources type="javascript" resources="jcr-oauth-data-mapper/controller.js"/>
 
 <md-card ng-controller="jcrOAuthDataMapperController" class="ng-cloak">
     <md-card-title>
         <md-card-title-text>
-            <span class="md-headline">JCR OAuth data mapper</span>
+            <span class="md-headline" message-key="joant_jcrOAuthView"></span>
         </md-card-title-text>
         <md-card-actions layout="row">
             <md-card-icon-actions>
@@ -35,24 +48,24 @@
 
     <md-card-content>
         <md-switch ng-model="isActivate">
-            Activate
+            <span message-key="joant_jcrOAuthView.label.activate"></span>
         </md-switch>
         <md-input-container>
-            <label>Field from connector</label>
+            <label message-key="joant_jcrOAuthView.label.fieldFromConnector"></label>
             <md-select ng-model="selectedPropertyFromConnector">
                 <md-optgroup>
                     <md-option ng-repeat="(propertyKey, propertyValue) in connectorProperties" ng-value="propertyKey" ng-show="isNotMapped(propertyKey, 'connector')">
-                        {{ propertyKey }} ({{ propertyValue['valueType'] }})
+                        {{ getConnectorI18n(propertyKey) }} ({{ propertyValue['valueType'] }})
                     </md-option>
                 </md-optgroup>
             </md-select>
         </md-input-container>
         <md-input-container>
-            <label>Field from mapper</label>
+            <label message-key="joant_jcrOAuthView.label.fieldFromMapper"></label>
             <md-select ng-model="selectedPropertyFromMapper">
                 <md-optgroup>
                     <md-option ng-repeat="(propertyKey, propertyValue) in mapperProperties" ng-value="propertyKey" ng-show="isNotMapped(propertyKey, 'mapper')">
-                        {{ propertyKey }} ({{ propertyValue['valueType'] }}) <span ng-if="propertyValue.mandatory" style="color: red">mandatory</span>
+                        {{ getMapperI18n(propertyKey) }} ({{ propertyValue['valueType'] }}) <span ng-if="propertyValue.mandatory" style="color: red" message-key="joant_jcrOAuthView.label.mandatory"></span>
                     </md-option>
                 </md-optgroup>
             </md-select>
@@ -64,12 +77,12 @@
         <md-list>
             <md-list-item ng-repeat="mapping in mapping track by $index">
                 <md-input-container class="md-block">
-                    <label>Connector</label>
-                    <input ng-value="mapping.connector" disabled>
+                    <label message-key="joant_jcrOAuthView.label.connector"></label>
+                    <input ng-value="getConnectorI18n(mapping.connector)" disabled>
                 </md-input-container>
                 <md-input-container class="md-block">
-                    <label>Mapper</label>
-                    <input ng-value="mapping.mapper" disabled>
+                    <label message-key="joant_jcrOAuthView.label.mapper"></label>
+                    <input ng-value="getMapperI18n(mapping.mapper)" disabled>
                 </md-input-container>
                 <md-button class="md-fab md-mini" ng-click="removeMapping($index)">
                     <md-icon>remove</md-icon>
