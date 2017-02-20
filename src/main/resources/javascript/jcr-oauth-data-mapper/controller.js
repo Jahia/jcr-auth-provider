@@ -1,7 +1,7 @@
 angular.module('JahiaOAuth')
     .controller('jcrOAuthDataMapperController',
-        ['$scope', '$mdToast', '$routeParams', 'settingsService', 'i18nService',
-        function($scope, $mdToast, $routeParams, settingsService, i18nService) {
+        ['$scope', '$routeParams', 'settingsService', 'helperService', 'i18nService',
+        function($scope, $routeParams, settingsService, helperService, i18nService) {
         $scope.isActivate = false;
         $scope.connectorProperties = {};
         $scope.mapperProperties = {};
@@ -17,18 +17,24 @@ angular.module('JahiaOAuth')
                 $scope.isActivate = data.isActivate;
                 $scope.mapping = data.mapping;
             }
+        }).error(function(data) {
+            helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.label') + ' ' + data.error);
         });
 
         settingsService.getConnectorProperties({
             serviceName: $routeParams.connectorServiceName
         }).success(function(data) {
             $scope.connectorProperties = data;
+        }).error(function(data) {
+            helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.label') + ' ' + data.error);
         });
 
         settingsService.getMapperProperties({
             mapperServiceName: 'jcrOAuthDataMapper'
         }).success(function(data) {
             $scope.mapperProperties = data;
+        }).error(function(data) {
+            helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.label') + ' ' + data.error);
         });
 
         $scope.saveMapperSettings = function() {
@@ -41,9 +47,7 @@ angular.module('JahiaOAuth')
                 }
             });
             if (!mandatoryPropertyAreMapped) {
-                $mdToast.show($mdToast.simple()
-                    .textContent('Missing mandatory properties!')
-                    .position('bottom right'));
+                helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.error.mandatoryPropertiesNotMapped'));
                 return false;
             }
 
@@ -53,13 +57,10 @@ angular.module('JahiaOAuth')
                 nodeType: 'joant:jcrOAuthSettings',
                 isActivate: $scope.isActivate,
                 mapping: $scope.mapping
-            }).success(function(data) {
-                $mdToast.show($mdToast.simple().textContent('SUCCESS!'));
+            }).success(function() {
+                helperService.successToast(i18nService.message('joant_jcrOAuthView.message.success.mappingSaved'));
             }).error(function(data) {
-                $mdToast.show($mdToast.simple()
-                    .textContent(data.error)
-                    .theme('errorToast')
-                    .position('bottom right'));
+                helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.label') + ' ' + data.error);
             });
         };
 
