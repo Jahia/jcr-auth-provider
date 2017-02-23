@@ -52,42 +52,54 @@
         </md-switch>
         <md-input-container>
             <label message-key="joant_jcrOAuthView.label.fieldFromConnector"></label>
-            <md-select ng-model="selectedPropertyFromConnector">
+            <md-select ng-model="selectedPropertyFromConnector" ng-change="addMapping()">
                 <md-optgroup>
-                    <md-option ng-repeat="(propertyKey, propertyValue) in connectorProperties" ng-value="propertyKey" ng-show="isNotMapped(propertyKey, 'connector')">
-                        {{ getConnectorI18n(propertyKey) }} ({{ propertyValue['valueType'] }})
+                    <md-option ng-repeat="connectorProperty in connectorProperties" ng-value="connectorProperty" ng-show="isNotMapped(connectorProperty.name, 'connector')">
+                        {{ getConnectorI18n(connectorProperty.name) }}
                     </md-option>
                 </md-optgroup>
             </md-select>
         </md-input-container>
-        <md-input-container>
-            <label message-key="joant_jcrOAuthView.label.fieldFromMapper"></label>
-            <md-select ng-model="selectedPropertyFromMapper">
-                <md-optgroup>
-                    <md-option ng-repeat="(propertyKey, propertyValue) in mapperProperties" ng-value="propertyKey" ng-show="isNotMapped(propertyKey, 'mapper')">
-                        {{ getMapperI18n(propertyKey) }} ({{ propertyValue['valueType'] }}) <span ng-if="propertyValue.mandatory" style="color: red" message-key="joant_jcrOAuthView.label.mandatory"></span>
-                    </md-option>
-                </md-optgroup>
-            </md-select>
-        </md-input-container>
-        <md-button class="md-fab md-mini" ng-click="addMapping()">
-            <md-icon>add</md-icon>
-        </md-button>
 
-        <md-list>
-            <md-list-item ng-repeat="mapping in mapping track by $index">
-                <md-input-container class="md-block">
-                    <label message-key="joant_jcrOAuthView.label.connector"></label>
-                    <input ng-value="getConnectorI18n(mapping.connector)" disabled>
-                </md-input-container>
-                <md-input-container class="md-block">
-                    <label message-key="joant_jcrOAuthView.label.mapper"></label>
-                    <input ng-value="getMapperI18n(mapping.mapper)" disabled>
-                </md-input-container>
-                <md-button class="md-fab md-mini" ng-click="removeMapping($index)">
-                    <md-icon>remove</md-icon>
-                </md-button>
-            </md-list-item>
-        </md-list>
+
+        <table style="width: 100%;border-collapse: collapse;">
+            <thead style="border-bottom: 1px solid rgb(230,230,230);color: rgb(130,130,130);text-align: left;font-size: 0.75em;">
+            <tr>
+                <th width="40%">
+                    <span message-key="joant_jcrOAuthView.label.connectorPropertyName"></span>
+                </th>
+                <th width="40%">
+                    <span message-key="joant_jcrOAuthView.label.mapperPropertyName"></span>
+                </th>
+                <th width="20%">
+                    <span message-key="joant_jcrOAuthView.label.action"></span>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="mapped in mapping track by $index">
+                <td>
+                    {{ getConnectorI18n(mapped.connector.name) }}
+                </td>
+                <td>
+                    <md-input-container>
+                        <label message-key="joant_jcrOAuthView.label.fieldFromMapper"></label>
+                        <md-select ng-model="mapped.mapper" ng-model-options="{trackBy: '$value.name'}">
+                            <md-optgroup>
+                                <md-option ng-repeat="mapperProperty in mapperProperties" ng-value="mapperProperty" ng-show="isNotMapped(mapperProperty.name, 'mapper')">
+                                    {{ getMapperI18n(mapperProperty.name) }} <span ng-if="mapperProperty.mandatory" style="color: red" message-key="joant_jcrOAuthView.label.mandatory"></span>
+                                </md-option>
+                            </md-optgroup>
+                        </md-select>
+                    </md-input-container>
+                </td>
+                <td>
+                    <md-button class="md-fab md-mini" ng-click="removeMapping($index)">
+                        <md-icon>remove</md-icon>
+                    </md-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </md-card-content>
 </md-card>

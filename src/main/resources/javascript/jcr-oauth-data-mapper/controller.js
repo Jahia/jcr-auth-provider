@@ -3,8 +3,8 @@ angular.module('JahiaOAuth')
         ['$scope', '$routeParams', 'settingsService', 'helperService', 'i18nService',
         function($scope, $routeParams, settingsService, helperService, i18nService) {
         $scope.isActivate = false;
-        $scope.connectorProperties = {};
-        $scope.mapperProperties = {};
+        $scope.connectorProperties = [];
+        $scope.mapperProperties = [];
         $scope.mapping = [];
         $scope.selectedPropertyFromConnector = '';
         $scope.selectedPropertyFromMapper = '';
@@ -24,7 +24,7 @@ angular.module('JahiaOAuth')
         settingsService.getConnectorProperties({
             serviceName: $routeParams.connectorServiceName
         }).success(function(data) {
-            $scope.connectorProperties = data;
+            $scope.connectorProperties = data.connectorProperties;
         }).error(function(data) {
             helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.label') + ' ' + data.error);
         });
@@ -32,21 +32,32 @@ angular.module('JahiaOAuth')
         settingsService.getMapperProperties({
             mapperServiceName: 'jcrOAuthDataMapper'
         }).success(function(data) {
-            $scope.mapperProperties = data;
+            $scope.mapperProperties = data.mapperProperties;
         }).error(function(data) {
             helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.label') + ' ' + data.error);
         });
 
         $scope.saveMapperSettings = function() {
+            var isMappingComplete = true;
+            angular.forEach($scope.mapping, function(mapped) {
+                if (!mapped.mapper || !mapped.connector) {
+                    isMappingComplete =false;
+                }
+            });
+            if (!isMappingComplete) {
+                helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.error.incompleteMapping'));
+                return false;
+            }
+
             var mandatoryPropertyAreMapped = true;
-            angular.forEach($scope.mapperProperties, function(value, key) {
-                if (value.mandatory) {
-                    if ($scope.isNotMapped(key, 'mapper')) {
+            angular.forEach($scope.mapperProperties, function(property) {
+                if (property.mandatory) {
+                    if ($scope.isNotMapped(property.name, 'mapper')) {
                         mandatoryPropertyAreMapped = false
                     }
                 }
             });
-            if (!mandatoryPropertyAreMapped) {
+            if ($scope.isActivate && !mandatoryPropertyAreMapped) {
                 helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.error.mandatoryPropertiesNotMapped'));
                 return false;
             }
@@ -65,13 +76,11 @@ angular.module('JahiaOAuth')
         };
 
         $scope.addMapping = function() {
-            if ($scope.selectedPropertyFromConnector && $scope.selectedPropertyFromMapper) {
+            if ($scope.selectedPropertyFromConnector) {
                 $scope.mapping.push({
-                    connector: $scope.selectedPropertyFromConnector,
-                    mapper: $scope.selectedPropertyFromMapper
+                    connector: $scope.selectedPropertyFromConnector
                 });
                 $scope.selectedPropertyFromConnector = '';
-                $scope.selectedPropertyFromMapper = '';
             }
         };
 
@@ -82,7 +91,7 @@ angular.module('JahiaOAuth')
         $scope.isNotMapped = function(field, key) {
             var isNotMapped = true;
             angular.forEach($scope.mapping, function(entry) {
-                if (entry[key] == field) {
+                if (entry[key] && entry[key].name == field) {
                     isNotMapped = false;
                 }
             });

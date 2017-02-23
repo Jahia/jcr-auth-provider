@@ -12,120 +12,106 @@
         <property name="jahiaOAuth" ref="jahiaOAuth"/>
         <property name="mapperServiceName" value="jcrOAuthDataMapper"/>
         <property name="mapperProperties">
-            <map>
-                <entry key="j:title">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:firstName">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:lastName">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:gender">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:birthDate">
-                    <map>
-                        <entry key="valueType" value="date"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:email">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">true</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:organization">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:function">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:income">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:about">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:linkedInID">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:twitterID">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:facebookID">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-                <entry key="j:skypeID">
-                    <map>
-                        <entry key="valueType" value="String"/>
-                        <entry key="mandatory">
-                            <value type="boolean">false</value>
-                        </entry>
-                    </map>
-                </entry>
-            </map>
+            <list>
+                <map>
+                    <entry key="name" value="j:title"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:firstName"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:lastName"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:gender"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:birthDate"/>
+                    <entry key="valueType" value="date"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:email"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">true</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:organization"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:function"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:income"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:about"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:linkedInID"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:twitterID"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:facebookID"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+                <map>
+                    <entry key="name" value="j:skypeID"/>
+                    <entry key="valueType" value="String"/>
+                    <entry key="mandatory">
+                        <value type="boolean">false</value>
+                    </entry>
+                </map>
+            </list>
         </property>
     </bean>
 
