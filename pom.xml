@@ -49,6 +49,17 @@
         <jahia-depends>default,jahia-oauth</jahia-depends>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>oauth-releases</id>
+            <url>https://devtools.jahia.com/nexus/content/repositories/oauth-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>oauth-snapshots</id>
+            <url>https://devtools.jahia.com/nexus/content/repositories/oauth-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <releases>
