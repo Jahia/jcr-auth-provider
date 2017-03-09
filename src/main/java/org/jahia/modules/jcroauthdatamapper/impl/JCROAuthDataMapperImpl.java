@@ -23,6 +23,7 @@
  */
 package org.jahia.modules.jcroauthdatamapper.impl;
 
+import org.jahia.modules.jahiaoauth.service.Constants;
 import org.jahia.modules.jahiaoauth.service.Mapper;
 import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRSessionWrapper;
@@ -51,7 +52,7 @@ public class JCROAuthDataMapperImpl implements Mapper {
             jcrTemplate.doExecuteWithSystemSession(new JCRCallback<Object>() {
                 @Override
                 public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                    String userId = (String) mapperResult.get("j:email");
+                    String userId = (mapperResult.containsKey("j:email"))?(String) mapperResult.get("j:email"):(String) mapperResult.get(Constants.CONNECTOR_NAME_AND_ID);
                     JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
                     if (userNode == null) {
                         Properties properties = new Properties();

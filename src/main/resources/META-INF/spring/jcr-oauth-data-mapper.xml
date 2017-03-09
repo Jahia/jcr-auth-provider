@@ -51,7 +51,7 @@
                     <entry key="name" value="j:email"/>
                     <entry key="valueType" value="String"/>
                     <entry key="mandatory">
-                        <value type="boolean">true</value>
+                        <value type="boolean">false</value>
                     </entry>
                 </map>
                 <map>
