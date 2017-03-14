@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <content xmlns:j="http://www.jahia.org/jahia/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0">
     <modules jcr:primaryType="jnt:modules">
-        <jcr-oauth-data-mapper j:dependencies="default jahia-oauth"
+        <jcr-oauth-provider j:dependencies="default jahia-oauth"
                              j:modulePriority="0"
                              j:moduleType="module"
-                             j:title="JCR OAuth data mapper"
+                             j:title="JCR OAuth provider"
                              jcr:primaryType="jnt:module">
                 
                 <portlets jcr:primaryType="jnt:portletFolder"/>
@@ -22,6 +22,6 @@
                     </jcr-oauth-view>
                 </templates>
                 
-            </jcr-oauth-data-mapper>
+            </jcr-oauth-provider>
     </modules>
 </content>

@@ -21,7 +21,7 @@
  *
  * ==========================================================================================
  */
-package org.jahia.modules.jcroauthdatamapper.impl;
+package org.jahia.modules.jcroauthprovider.impl;
 
 import org.apache.jackrabbit.util.ISO8601;
 import org.jahia.modules.jahiaoauth.service.Constants;

@@ -7,7 +7,7 @@
 
     <osgi:reference id="jahiaOAuth" interface="org.jahia.modules.jahiaoauth.service.JahiaOAuth" availability="mandatory"/>
 
-    <bean id="dataLoader" class="org.jahia.modules.jcroauthdatamapper.DataLoader" init-method="onStart">
+    <bean id="dataLoader" class="org.jahia.modules.jcroauthprovider.DataLoader" init-method="onStart">
         <property name="jahiaOAuth" ref="jahiaOAuth"/>
         <property name="mapperServiceName" value="jcrOAuthDataMapper"/>
         <property name="mapperProperties">
@@ -114,7 +114,7 @@
         </property>
     </bean>
 
-    <bean id="jcrOAuthDataMapper" class="org.jahia.modules.jcroauthdatamapper.impl.JCROAuthDataMapperImpl">
+    <bean id="jcrOAuthDataMapper" class="org.jahia.modules.jcroauthprovider.impl.JCROAuthDataMapperImpl">
         <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
         <property name="jcrTemplate" ref="jcrTemplate"/>
     </bean>

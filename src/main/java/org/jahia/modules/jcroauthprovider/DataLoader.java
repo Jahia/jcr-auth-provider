@@ -21,7 +21,7 @@
  *
  * ==========================================================================================
  */
-package org.jahia.modules.jcroauthdatamapper;
+package org.jahia.modules.jcroauthprovider;
 
 import org.jahia.modules.jahiaoauth.service.JahiaOAuth;
 

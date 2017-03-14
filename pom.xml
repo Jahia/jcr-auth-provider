@@ -33,16 +33,16 @@
         <version>7.1.2.0</version>
     </parent>
 
-    <artifactId>jcr-oauth-data-mapper</artifactId>
+    <artifactId>jcr-oauth-provider</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>JCR OAuth data mapper</name>
-    <description>This is the custom module (JCR OAuth data mapper) for running on a Digital Experience Manager server.</description>
+    <name>JCR OAuth provider</name>
+    <description>This is the custom module (JCR OAuth provider) for running on a Digital Experience Manager server.</description>
 
     <scm>
-        <connection>scm:git:git@github.com:Jahia/jcr-oauth-data-mapper.git</connection>
-        <developerConnection>scm:git:git@github.com:Jahia/jcr-oauth-data-mapper.git</developerConnection>
-        <url>https://github.com/Jahia/jcr-oauth-data-mapper</url>
+        <connection>scm:git:git@github.com:Jahia/jcr-oauth-provider.git</connection>
+        <developerConnection>scm:git:git@github.com:Jahia/jcr-oauth-provider.git</developerConnection>
+        <url>https://github.com/Jahia/jcr-oauth-provider</url>
     </scm>
 
     <properties>

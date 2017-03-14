@@ -25,7 +25,7 @@ package org.jahia.params.valves.jcroauth;
 
 import org.jahia.api.Constants;
 import org.jahia.modules.jahiaoauth.service.JahiaOAuth;
-import org.jahia.modules.jcroauthdatamapper.DataLoader;
+import org.jahia.modules.jcroauthprovider.DataLoader;
 import org.jahia.params.valves.*;
 import org.jahia.pipelines.PipelineException;
 import org.jahia.pipelines.valves.ValveContext;

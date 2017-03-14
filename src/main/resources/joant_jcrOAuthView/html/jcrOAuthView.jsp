@@ -17,14 +17,14 @@
 <%--@elvariable id="currentResource" type="org.jahia.services.render.Resource"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
-<template:addResources type="javascript" resources="i18n/jcr-oauth-data-mapper-i18n_${currentResource.locale}.js" var="i18nJSFile"/>
+<template:addResources type="javascript" resources="i18n/jcr-oauth-provider-i18n_${currentResource.locale}.js" var="i18nJSFile"/>
 <c:if test="${empty i18nJSFile}">
-    <template:addResources type="javascript" resources="i18n/jcr-oauth-data-mapper-i18n_en.js"/>
+    <template:addResources type="javascript" resources="i18n/jcr-oauth-provider-i18n_en.js"/>
 </c:if>
 
-<template:addResources type="javascript" resources="jcr-oauth-data-mapper/jcr-mapper-controller.js"/>
+<template:addResources type="javascript" resources="jcr-oauth-provider/jcr-mapper-controller.js"/>
 
-<md-card ng-controller="JCROAuthDataMapperController as jcrOAuthDataMapper" class="ng-cloak">
+<md-card ng-controller="JCROAuthProviderController as jcrOAuthProvider" class="ng-cloak">
     <div layout="row">
         <md-card-title flex>
             <md-card-title-text>
@@ -32,21 +32,21 @@
             </md-card-title-text>
         </md-card-title>
         <div flex layout="row" layout-align="end center">
-            <md-button class="md-icon-button" ng-click="jcrOAuthDataMapper.toggleCard()">
+            <md-button class="md-icon-button" ng-click="jcrOAuthProvider.toggleCard()">
                 <md-tooltip md-direction="top">
                     <span message-key="joant_jcrOAuthView.tooltip.toggleSettings"></span>
                 </md-tooltip>
-                <md-icon ng-show="!jcrOAuthDataMapper.expandedCard">
+                <md-icon ng-show="!jcrOAuthProvider.expandedCard">
                     keyboard_arrow_down
                 </md-icon>
-                <md-icon ng-show="jcrOAuthDataMapper.expandedCard">
+                <md-icon ng-show="jcrOAuthProvider.expandedCard">
                     keyboard_arrow_up
                 </md-icon>
             </md-button>
         </div>
     </div>
 
-    <md-card-content ng-show="jcrOAuthDataMapper.expandedCard">
+    <md-card-content ng-show="jcrOAuthProvider.expandedCard">
 
         <div class="md-subhead joa-description">
             <span message-key="joant_jcrOAuthView.message.description1"></span>
@@ -55,7 +55,7 @@
         </div>
 
         <div flex="35" layout="row" layout-align="start center">
-            <md-switch ng-model="jcrOAuthDataMapper.isActivate">
+            <md-switch ng-model="jcrOAuthProvider.isActivate">
                 <span message-key="joant_jcrOAuthView.label.activate"></span>
             </md-switch>
 
@@ -63,10 +63,10 @@
 
             <md-input-container flex>
                 <label message-key="joant_jcrOAuthView.label.fieldFromConnector"></label>
-                <md-select ng-model="jcrOAuthDataMapper.selectedPropertyFromConnector" ng-change="jcrOAuthDataMapper.addMapping()">
+                <md-select ng-model="jcrOAuthProvider.selectedPropertyFromConnector" ng-change="jcrOAuthProvider.addMapping()">
                     <md-optgroup>
-                        <md-option ng-repeat="connectorProperty in jcrOAuthDataMapper.connectorProperties" ng-value="connectorProperty" ng-show="jcrOAuthDataMapper.isNotMapped(connectorProperty.name, 'connector')">
-                            {{ jcrOAuthDataMapper.getConnectorI18n(connectorProperty.name) }}
+                        <md-option ng-repeat="connectorProperty in jcrOAuthProvider.connectorProperties" ng-value="connectorProperty" ng-show="jcrOAuthProvider.isNotMapped(connectorProperty.name, 'connector')">
+                            {{ jcrOAuthProvider.getConnectorI18n(connectorProperty.name) }}
                         </md-option>
                     </md-optgroup>
                 </md-select>
@@ -74,19 +74,19 @@
         </div>
 
 
-        <section ng-show="jcrOAuthDataMapper.mapping.length > 0">
+        <section ng-show="jcrOAuthProvider.mapping.length > 0">
             <hr />
-            <div layout="row" ng-repeat="mapped in jcrOAuthDataMapper.mapping track by $index" layout-align="start center">
+            <div layout="row" ng-repeat="mapped in jcrOAuthProvider.mapping track by $index" layout-align="start center">
                 <div flex="45">
-                    {{ jcrOAuthDataMapper.getConnectorI18n(mapped.connector.name) }}
+                    {{ jcrOAuthProvider.getConnectorI18n(mapped.connector.name) }}
                 </div>
                 <div flex="45" layout="row">
                     <md-input-container flex>
                         <label message-key="joant_jcrOAuthView.label.fieldFromMapper"></label>
                         <md-select ng-model="mapped.mapper" ng-model-options="{trackBy: '$value.name'}">
                             <md-optgroup>
-                                <md-option ng-repeat="mapperProperty in jcrOAuthDataMapper.mapperProperties" ng-value="mapperProperty" ng-show="jcrOAuthDataMapper.isNotMapped(mapperProperty.name, 'mapper') && (mapperProperty.valueType == mapped.connector.valueType)">
-                                    {{ jcrOAuthDataMapper.getMapperI18n(mapperProperty.name) }} <span ng-if="mapperProperty.mandatory" class="joa-mandatory-property" message-key="joant_jcrOAuthView.label.mandatory"></span>
+                                <md-option ng-repeat="mapperProperty in jcrOAuthProvider.mapperProperties" ng-value="mapperProperty" ng-show="jcrOAuthProvider.isNotMapped(mapperProperty.name, 'mapper') && (mapperProperty.valueType == mapped.connector.valueType)">
+                                    {{ jcrOAuthProvider.getMapperI18n(mapperProperty.name) }} <span ng-if="mapperProperty.mandatory" class="joa-mandatory-property" message-key="joant_jcrOAuthView.label.mandatory"></span>
                                 </md-option>
                             </md-optgroup>
                         </md-select>
@@ -97,7 +97,7 @@
                                ng-class="{ 'md-warn': hover }"
                                ng-mouseenter="hover = true"
                                ng-mouseleave="hover = false"
-                               ng-click="jcrOAuthDataMapper.removeMapping($index)">
+                               ng-click="jcrOAuthProvider.removeMapping($index)">
                         <md-tooltip md-direction="left">
                             <span message-key="joant_jcrOAuthView.tooltip.removeMappedField"></span>
                         </md-tooltip>
@@ -109,7 +109,7 @@
 
         <md-card-actions layout="row" layout-align="end center">
             <md-button class="md-accent" message-key="joant_jcrOAuthView.label.save"
-                       ng-click="jcrOAuthDataMapper.saveMapperSettings()">
+                       ng-click="jcrOAuthProvider.saveMapperSettings()">
             </md-button>
         </md-card-actions>
     </md-card-content>

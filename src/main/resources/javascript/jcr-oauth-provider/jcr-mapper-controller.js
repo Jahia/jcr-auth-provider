@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('JahiaOAuthApp').controller('JCROAuthDataMapperController', JCROAuthController);
+    angular.module('JahiaOAuthApp').controller('JCROAuthProviderController', JCROAuthController);
 
     JCROAuthController.$inject = ['$routeParams', 'settingsService', 'helperService', 'i18nService'];
 
@@ -55,7 +55,7 @@
 
             settingsService.setMapperMapping({
                 serviceName: $routeParams.connectorServiceName,
-                mapperServiceName: 'jcrOAuthDataMapper',
+                mapperServiceName: 'jcrOAuthProvider',
                 nodeType: 'joant:jcrOAuthSettings',
                 isActivate: vm.isActivate,
                 mapping: vm.mapping
@@ -94,7 +94,7 @@
         }
 
         function getMapperI18n(value) {
-            return i18nService.message('jcrOAuthDataMapper.label.' + value.replace(':', '_'));
+            return i18nService.message('jcrOAuthProvider.label.' + value.replace(':', '_'));
         }
 
         function toggleCard() {
@@ -106,7 +106,7 @@
 
             settingsService.getMapperMapping({
                 serviceName: $routeParams.connectorServiceName,
-                mapperServiceName: 'jcrOAuthDataMapper'
+                mapperServiceName: 'jcrOAuthProvider'
             }).success(function (data) {
                 if (!angular.equals(data, {})) {
                     vm.isActivate = data.isActivate;
@@ -125,7 +125,7 @@
             });
 
             settingsService.getMapperProperties({
-                mapperServiceName: 'jcrOAuthDataMapper'
+                mapperServiceName: 'jcrOAuthProvider'
             }).success(function(data) {
                 vm.mapperProperties = data.mapperProperties;
             }).error(function(data) {
