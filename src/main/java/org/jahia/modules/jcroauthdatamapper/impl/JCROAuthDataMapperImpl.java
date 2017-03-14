@@ -23,6 +23,7 @@
  */
 package org.jahia.modules.jcroauthdatamapper.impl;
 
+import org.apache.jackrabbit.util.ISO8601;
 import org.jahia.modules.jahiaoauth.service.Constants;
 import org.jahia.modules.jahiaoauth.service.Mapper;
 import org.jahia.services.content.JCRCallback;
@@ -30,12 +31,14 @@ import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
 import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.usermanager.JahiaUserManagerService;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author dgaillard
@@ -52,22 +55,19 @@ public class JCROAuthDataMapperImpl implements Mapper {
             jcrTemplate.doExecuteWithSystemSession(new JCRCallback<Object>() {
                 @Override
                 public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                    String userId = (mapperResult.containsKey("j:email"))?(String) mapperResult.get("j:email"):(String) mapperResult.get(Constants.CONNECTOR_NAME_AND_ID);
+                    String userId = (mapperResult.containsKey("j:email")) ? (String) ((Map<String, Object>) mapperResult.get("j:email")).get(Constants.PROPERTY_VALUE) : (String) mapperResult.get(Constants.CONNECTOR_NAME_AND_ID);
+
                     JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
                     if (userNode == null) {
                         Properties properties = new Properties();
-                        for (Map.Entry<String, Object> entry : mapperResult.entrySet()) {
-                            properties.setProperty(entry.getKey(), (String) entry.getValue());
-                        }
+                        updateUserProperties(userNode, mapperResult);
                         userNode = jahiaUserManagerService.createUser(userId, "SHA-1:*", properties, session);
                         if (userNode == null) {
                             throw new RuntimeException("Cannot create user from access token");
                         }
                     } else {
                         try {
-                            for (Map.Entry<String, Object> entry : mapperResult.entrySet()) {
-                                userNode.setProperty(entry.getKey(), (String) entry.getValue());
-                            }
+                            updateUserProperties(userNode, mapperResult);
                         } catch (RepositoryException e) {
                             logger.error("Could not set user property", e.getMessage());
                         }
@@ -78,6 +78,23 @@ public class JCROAuthDataMapperImpl implements Mapper {
             });
         } catch (RepositoryException e) {
             logger.error(e.getMessage());
+        }
+    }
+
+    private void updateUserProperties(JCRUserNode userNode, Map<String, Object> mapperResult) throws RepositoryException {
+        for (Map.Entry<String, Object> entry : mapperResult.entrySet()) {
+            if (!entry.getKey().equals(Constants.TOKEN) && !entry.getKey().equals(Constants.CONNECTOR_NAME_AND_ID)) {
+                Map<String, Object> propertyInfo = (Map<String, Object>) entry.getValue();
+                if (propertyInfo.get(Constants.PROPERTY_VALUE_TYPE).equals("date")) {
+                    DateTimeFormatter dtf = DateTimeFormat.forPattern((String) propertyInfo.get(Constants.PROPERTY_VALUE_FORMAT));
+                    DateTime date = dtf.parseDateTime((String) propertyInfo.get(Constants.PROPERTY_VALUE));
+                    GregorianCalendar c = new GregorianCalendar();
+                    c.setTimeInMillis(date.getMillis());
+                    userNode.setProperty(entry.getKey(), ISO8601.format(c));
+                } else {
+                    userNode.setProperty(entry.getKey(), (String) propertyInfo.get(Constants.PROPERTY_VALUE));
+                }
+            }
         }
     }
 

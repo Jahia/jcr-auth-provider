@@ -87,7 +87,7 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
 
         boolean ok = false;
         String siteKey = request.getParameter("site");
-        String userId = (mapperResult.containsKey("j:email")) ? (String) mapperResult.get("j:email") : (String) mapperResult.get(org.jahia.modules.jahiaoauth.service.Constants.CONNECTOR_NAME_AND_ID);
+        String userId = (mapperResult.containsKey("j:email")) ? (String) ((Map<String, Object>) mapperResult.get("j:email")).get(org.jahia.modules.jahiaoauth.service.Constants.PROPERTY_VALUE) : (String) mapperResult.get(org.jahia.modules.jahiaoauth.service.Constants.CONNECTOR_NAME_AND_ID);
         JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, siteKey);
 
         if (userNode != null) {
