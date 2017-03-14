@@ -48,7 +48,11 @@
 
     <md-card-content ng-show="jcrOAuthDataMapper.expandedCard">
 
-        <div class="md-subhead joa-description" message-key="joant_jcrOAuthView.message.description"></div>
+        <div class="md-subhead joa-description">
+            <span message-key="joant_jcrOAuthView.message.description1"></span>
+            <br />
+            <span message-key="joant_jcrOAuthView.message.description2"></span>
+        </div>
 
         <div flex="35" layout="row" layout-align="start center">
             <md-switch ng-model="jcrOAuthDataMapper.isActivate">
@@ -81,7 +85,7 @@
                         <label message-key="joant_jcrOAuthView.label.fieldFromMapper"></label>
                         <md-select ng-model="mapped.mapper" ng-model-options="{trackBy: '$value.name'}">
                             <md-optgroup>
-                                <md-option ng-repeat="mapperProperty in jcrOAuthDataMapper.mapperProperties" ng-value="mapperProperty" ng-show="jcrOAuthDataMapper.isNotMapped(mapperProperty.name, 'mapper')">
+                                <md-option ng-repeat="mapperProperty in jcrOAuthDataMapper.mapperProperties" ng-value="mapperProperty" ng-show="jcrOAuthDataMapper.isNotMapped(mapperProperty.name, 'mapper') && (mapperProperty.valueType == mapped.connector.valueType)">
                                     {{ jcrOAuthDataMapper.getMapperI18n(mapperProperty.name) }} <span ng-if="mapperProperty.mandatory" class="joa-mandatory-property" message-key="joant_jcrOAuthView.label.mandatory"></span>
                                 </md-option>
                             </md-optgroup>
