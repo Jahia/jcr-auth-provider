@@ -9,7 +9,7 @@
 
     <bean id="dataLoader" class="org.jahia.modules.jcroauthprovider.DataLoader" init-method="onStart">
         <property name="jahiaOAuth" ref="jahiaOAuth"/>
-        <property name="mapperServiceName" value="jcrOAuthDataMapper"/>
+        <property name="mapperServiceName" value="jcrOAuthProvider"/>
         <property name="mapperProperties">
             <list>
                 <map>
@@ -114,7 +114,7 @@
         </property>
     </bean>
 
-    <bean id="jcrOAuthDataMapper" class="org.jahia.modules.jcroauthprovider.impl.JCROAuthDataMapperImpl">
+    <bean id="jcrOAuthProvider" class="org.jahia.modules.jcroauthprovider.impl.JCROAuthDataMapperImpl">
         <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
         <property name="jcrTemplate" ref="jcrTemplate"/>
     </bean>
@@ -127,9 +127,9 @@
         <property name="preserveSessionAttributes" value="${preserveSessionAttributesOnLogin:wemSessionId}" />
     </bean>
 
-    <osgi:service ref="jcrOAuthDataMapper" interface="org.jahia.modules.jahiaoauth.service.Mapper">
+    <osgi:service ref="jcrOAuthProvider" interface="org.jahia.modules.jahiaoauth.service.Mapper">
         <osgi:service-properties>
-            <entry key="mapperServiceName" value="jcrOAuthDataMapper"/>
+            <entry key="mapperServiceName" value="jcrOAuthProvider"/>
         </osgi:service-properties>
     </osgi:service>
 </beans>

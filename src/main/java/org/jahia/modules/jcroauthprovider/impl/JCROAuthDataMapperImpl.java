@@ -60,8 +60,8 @@ public class JCROAuthDataMapperImpl implements Mapper {
                     JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
                     if (userNode == null) {
                         Properties properties = new Properties();
-                        updateUserProperties(userNode, mapperResult);
                         userNode = jahiaUserManagerService.createUser(userId, "SHA-1:*", properties, session);
+                        updateUserProperties(userNode, mapperResult);
                         if (userNode == null) {
                             throw new RuntimeException("Cannot create user from access token");
                         }
