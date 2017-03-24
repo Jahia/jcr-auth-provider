@@ -54,7 +54,7 @@
             }
 
             settingsService.setMapperMapping({
-                serviceName: $routeParams.connectorServiceName,
+                connectorServiceName: $routeParams.connectorServiceName,
                 mapperServiceName: 'jcrOAuthProvider',
                 nodeType: 'joant:jcrOAuthSettings',
                 isActivate: vm.isActivate,
@@ -105,7 +105,7 @@
             i18nService.addKey(jcroai18n);
 
             settingsService.getMapperMapping({
-                serviceName: $routeParams.connectorServiceName,
+                connectorServiceName: $routeParams.connectorServiceName,
                 mapperServiceName: 'jcrOAuthProvider'
             }).success(function (data) {
                 if (!angular.equals(data, {})) {
@@ -117,7 +117,7 @@
             });
 
             settingsService.getConnectorProperties({
-                serviceName: $routeParams.connectorServiceName
+                connectorServiceName: $routeParams.connectorServiceName
             }).success(function(data) {
                 vm.connectorProperties = data.connectorProperties;
             }).error(function(data) {

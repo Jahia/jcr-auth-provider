@@ -24,8 +24,10 @@
 package org.jahia.params.valves.jcroauth;
 
 import org.jahia.api.Constants;
-import org.jahia.modules.jahiaoauth.service.JahiaOAuth;
-import org.jahia.modules.jcroauthprovider.DataLoader;
+import org.jahia.modules.jahiaoauth.service.JahiaOAuthCacheService;
+import org.jahia.modules.jahiaoauth.service.JahiaOAuthConstants;
+import org.jahia.modules.jahiaoauth.service.JahiaOAuthService;
+import org.jahia.modules.jcroauthprovider.impl.JCROAuthProviderMapperImpl;
 import org.jahia.params.valves.*;
 import org.jahia.pipelines.PipelineException;
 import org.jahia.pipelines.valves.ValveContext;
@@ -54,9 +56,10 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
     private static String VALVE_RESULT = "login_valve_result";
 
     private JahiaUserManagerService jahiaUserManagerService;
-    private JahiaOAuth jahiaOAuth;
-    private DataLoader dataLoader;
+    private JahiaOAuthService jahiaOAuthService;
+    private JahiaOAuthCacheService jahiaOAuthCacheService;
     private CookieAuthConfig cookieAuthConfig;
+    private JCROAuthProviderMapperImpl jcrOAuthProviderMapperImpl;
 
     private String preserveSessionAttributes = null;
 
@@ -79,7 +82,7 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
         }
 
         String originalSessionId = request.getSession().getId();
-        HashMap<String, Object> mapperResult = jahiaOAuth.getMapperResults(dataLoader.getMapperServiceName(), originalSessionId);
+        HashMap<String, Object> mapperResult = jahiaOAuthService.getMapperResults(jcrOAuthProviderMapperImpl.getServiceName(), originalSessionId);
         if (mapperResult == null || !request.getParameterMap().containsKey("site")) {
             valveContext.invokeNext(context);
             return;
@@ -87,7 +90,7 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
 
         boolean ok = false;
         String siteKey = request.getParameter("site");
-        String userId = (mapperResult.containsKey("j:email")) ? (String) ((Map<String, Object>) mapperResult.get("j:email")).get(org.jahia.modules.jahiaoauth.service.Constants.PROPERTY_VALUE) : (String) mapperResult.get(org.jahia.modules.jahiaoauth.service.Constants.CONNECTOR_NAME_AND_ID);
+        String userId = (mapperResult.containsKey("j:email")) ? (String) ((Map<String, Object>) mapperResult.get("j:email")).get(JahiaOAuthConstants.PROPERTY_VALUE) : (String) mapperResult.get(JahiaOAuthConstants.CONNECTOR_NAME_AND_ID);
         JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, siteKey);
 
         if (userNode != null) {
@@ -119,7 +122,7 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
             }
 
             if (!originalSessionId.equals(request.getSession().getId())) {
-                jahiaOAuth.updateCacheEntry(originalSessionId, request.getSession().getId());
+                jahiaOAuthCacheService.updateCacheEntry(originalSessionId, request.getSession().getId());
             }
 
             // if there were saved session attributes, we restore them here.
@@ -172,12 +175,12 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
         }
     }
 
-    public void setJahiaOAuth(JahiaOAuth jahiaOAuth) {
-        this.jahiaOAuth = jahiaOAuth;
+    public void setJahiaOAuthService(JahiaOAuthService jahiaOAuthService) {
+        this.jahiaOAuthService = jahiaOAuthService;
     }
 
-    public void setDataLoader(DataLoader dataLoader) {
-        this.dataLoader = dataLoader;
+    public void setJahiaOAuthCacheService(JahiaOAuthCacheService jahiaOAuthCacheService) {
+        this.jahiaOAuthCacheService = jahiaOAuthCacheService;
     }
 
     public void setJahiaUserManagerService(JahiaUserManagerService jahiaUserManagerService) {
@@ -190,5 +193,9 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
 
     public void setPreserveSessionAttributes(String preserveSessionAttributes) {
         this.preserveSessionAttributes = preserveSessionAttributes;
+    }
+
+    public void setJcrOAuthProviderMapperImpl(JCROAuthProviderMapperImpl jcrOAuthProviderMapperImpl) {
+        this.jcrOAuthProviderMapperImpl = jcrOAuthProviderMapperImpl;
     }
 }
