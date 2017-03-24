@@ -90,7 +90,9 @@ public class JCROAuthProviderMapperImpl implements MapperService {
 
     private void updateUserProperties(JCRUserNode userNode, Map<String, Object> mapperResult) throws RepositoryException {
         for (Map.Entry<String, Object> entry : mapperResult.entrySet()) {
-            if (!entry.getKey().equals(JahiaOAuthConstants.TOKEN) && !entry.getKey().equals(JahiaOAuthConstants.CONNECTOR_NAME_AND_ID)) {
+            if (!entry.getKey().equals(JahiaOAuthConstants.TOKEN_DATA)
+                    && !entry.getKey().equals(JahiaOAuthConstants.CONNECTOR_NAME_AND_ID)
+                    && !entry.getKey().equals(JahiaOAuthConstants.CONNECTOR_SERVICE_NAME)) {
                 Map<String, Object> propertyInfo = (Map<String, Object>) entry.getValue();
                 if (propertyInfo.get(JahiaOAuthConstants.PROPERTY_VALUE_TYPE).equals("date")) {
                     DateTimeFormatter dtf = DateTimeFormat.forPattern((String) propertyInfo.get(JahiaOAuthConstants.PROPERTY_VALUE_FORMAT));
