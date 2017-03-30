@@ -24,8 +24,7 @@
     ==========================================================================================
 
 -->
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.jahia.modules</groupId>
@@ -34,7 +33,7 @@
     </parent>
 
     <artifactId>jcr-oauth-provider</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-RC1</version>
     <packaging>bundle</packaging>
     <name>JCR OAuth provider</name>
     <description>This is the custom module (JCR OAuth provider) for running on a Digital Experience Manager server.</description>
@@ -43,7 +42,8 @@
         <connection>scm:git:git@github.com:Jahia/jcr-oauth-provider.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/jcr-oauth-provider.git</developerConnection>
         <url>https://github.com/Jahia/jcr-oauth-provider</url>
-    </scm>
+      <tag>1.0.0-RC1</tag>
+  </scm>
 
     <properties>
         <jahia-depends>default,jahia-oauth</jahia-depends>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>org.jahia.modules</groupId>
             <artifactId>jahia-oauth</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0-RC1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
