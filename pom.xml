@@ -33,7 +33,7 @@
     </parent>
 
     <artifactId>jcr-oauth-provider</artifactId>
-    <version>1.0.0-RC1</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>JCR OAuth provider</name>
     <description>This is the custom module (JCR OAuth provider) for running on a Digital Experience Manager server.</description>
@@ -42,7 +42,7 @@
         <connection>scm:git:git@github.com:Jahia/jcr-oauth-provider.git</connection>
         <developerConnection>scm:git:git@github.com:Jahia/jcr-oauth-provider.git</developerConnection>
         <url>https://github.com/Jahia/jcr-oauth-provider</url>
-      <tag>1.0.0-RC1</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>org.jahia.modules</groupId>
             <artifactId>jahia-oauth</artifactId>
-            <version>1.0.0-RC1</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
