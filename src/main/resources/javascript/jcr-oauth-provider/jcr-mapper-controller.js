@@ -21,12 +21,11 @@
         vm.saveMapperSettings = saveMapperSettings;
         vm.addMapping = addMapping;
         vm.removeMapping = removeMapping;
-        vm.isNotMapped = isNotMapped;
         vm.getConnectorI18n = getConnectorI18n;
         vm.getMapperI18n = getMapperI18n;
         vm.toggleCard = toggleCard;
 
-        init();
+        _init();
 
         function saveMapperSettings() {
             var isMappingComplete = true;
@@ -43,7 +42,7 @@
             var mandatoryPropertyAreMapped = true;
             angular.forEach(vm.mapperProperties, function(property) {
                 if (property.mandatory) {
-                    if (vm.isNotMapped(property.name, 'mapper')) {
+                    if (_isNotMapped(property.name, 'mapper')) {
                         mandatoryPropertyAreMapped = false
                     }
                 }
@@ -79,16 +78,6 @@
             vm.mapping.splice(index, 1);
         }
 
-        function isNotMapped(field, key) {
-            var isNotMapped = true;
-            angular.forEach(vm.mapping, function(entry) {
-                if (entry[key] && entry[key].name == field) {
-                    isNotMapped = false;
-                }
-            });
-            return isNotMapped;
-        }
-
         function getConnectorI18n(value) {
             return i18nService.message($routeParams.connectorServiceName + '.label.' + value);
         }
@@ -101,7 +90,8 @@
             vm.expandedCard = !vm.expandedCard;
         }
 
-        function init() {
+        // Private functions under this line
+        function _init() {
             i18nService.addKey(jcroai18n);
 
             settingsService.getMapperMapping({
@@ -131,6 +121,16 @@
             }).error(function(data) {
                 helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.label') + ' ' + data.error);
             });
+        }
+
+        function _isNotMapped(field, key) {
+            var isNotMapped = true;
+            angular.forEach(vm.mapping, function(entry) {
+                if (entry[key] && entry[key].name == field) {
+                    isNotMapped = false;
+                }
+            });
+            return isNotMapped;
         }
     }
 })();

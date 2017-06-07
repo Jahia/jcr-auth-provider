@@ -65,7 +65,7 @@
                 <label message-key="joant_jcrOAuthView.label.fieldFromConnector"></label>
                 <md-select ng-model="jcrOAuthProvider.selectedPropertyFromConnector" ng-change="jcrOAuthProvider.addMapping()">
                     <md-optgroup>
-                        <md-option ng-repeat="connectorProperty in jcrOAuthProvider.connectorProperties" ng-value="connectorProperty" ng-show="jcrOAuthProvider.isNotMapped(connectorProperty.name, 'connector')">
+                        <md-option ng-repeat="connectorProperty in jcrOAuthProvider.connectorProperties | selectable:{mapping:jcrOAuthProvider.mapping,key:'connector'}" ng-value="connectorProperty">
                             {{ jcrOAuthProvider.getConnectorI18n(connectorProperty.name) }}
                         </md-option>
                     </md-optgroup>
@@ -85,7 +85,7 @@
                         <label message-key="joant_jcrOAuthView.label.fieldFromMapper"></label>
                         <md-select ng-model="mapped.mapper" ng-model-options="{trackBy: '$value.name'}">
                             <md-optgroup>
-                                <md-option ng-repeat="mapperProperty in jcrOAuthProvider.mapperProperties" ng-value="mapperProperty" ng-show="jcrOAuthProvider.isNotMapped(mapperProperty.name, 'mapper') && (mapperProperty.valueType == mapped.connector.valueType)">
+                                <md-option ng-repeat="mapperProperty in jcrOAuthProvider.mapperProperties | selectable:{mapping:jcrOAuthProvider.mapping,key:'mapper',selected:mapped.mapper} | typeMatch:mapped.connector.valueType" ng-value="mapperProperty">
                                     {{ jcrOAuthProvider.getMapperI18n(mapperProperty.name) }} <span ng-if="mapperProperty.mandatory" class="joa-mandatory-property" message-key="joant_jcrOAuthView.label.mandatory"></span>
                                 </md-option>
                             </md-optgroup>
