@@ -24,6 +24,8 @@
         vm.getConnectorI18n = getConnectorI18n;
         vm.getMapperI18n = getMapperI18n;
         vm.toggleCard = toggleCard;
+        vm.orderByConnector = orderByConnector;
+        vm.orderByMapper = orderByMapper;
 
         _init();
 
@@ -88,6 +90,14 @@
 
         function toggleCard() {
             vm.expandedCard = !vm.expandedCard;
+        }
+
+        function orderByConnector(property) {
+            return getConnectorI18n(property.name);
+        }
+
+        function orderByMapper(property) {
+            return getMapperI18n(property.name);
         }
 
         // Private functions under this line
