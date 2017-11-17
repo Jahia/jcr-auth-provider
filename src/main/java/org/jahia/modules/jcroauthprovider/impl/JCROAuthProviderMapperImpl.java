@@ -112,6 +112,7 @@ public class JCROAuthProviderMapperImpl implements MapperService {
         for (Map.Entry<String, Object> entry : mapperResult.entrySet()) {
             if (!entry.getKey().equals(JahiaOAuthConstants.TOKEN_DATA)
                     && !entry.getKey().equals(JahiaOAuthConstants.CONNECTOR_NAME_AND_ID)
+                    && !entry.getKey().equals(JahiaOAuthConstants.PROPERTY_SITE_KEY)
                     && !entry.getKey().equals(JahiaOAuthConstants.CONNECTOR_SERVICE_NAME)) {
                 Map<String, Object> propertyInfo = (Map<String, Object>) entry.getValue();
                 if (propertyInfo.get(JahiaOAuthConstants.PROPERTY_VALUE_TYPE).equals("date")) {
