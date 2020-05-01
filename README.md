@@ -4,8 +4,8 @@
 This module works with Jahia OAuth and allows you to create(if needed) and connect an user as a result of an open authentication.
 
 ### MINIMAL REQUIREMENTS
-* DX 7.2.0.0
-* Jahia OAuth module 1.0.0
+* Jahia 8.0.0.0
+* Jahia OAuth module 2.0.0
 * At least one connector module
 
 ### INSTALLATION
