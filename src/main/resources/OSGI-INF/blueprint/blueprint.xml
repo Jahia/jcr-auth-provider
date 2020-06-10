@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:osgi="http://www.eclipse.org/gemini/blueprint/schema/blueprint"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-                           http://www.eclipse.org/gemini/blueprint/schema/blueprint http://www.eclipse.org/gemini/blueprint/schema/blueprint/gemini-blueprint.xsd">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
-    <osgi:reference id="jahiaOAuthService" interface="org.jahia.modules.jahiaoauth.service.JahiaOAuthService" availability="mandatory"/>
-    <osgi:reference id="jahiaOAuthCacheService" interface="org.jahia.modules.jahiaoauth.service.JahiaOAuthCacheService" availability="mandatory"/>
+    <reference id="jahiaOAuthService" interface="org.jahia.modules.jahiaoauth.service.JahiaOAuthService" availability="mandatory"/>
+    <reference id="jahiaOAuthCacheService" interface="org.jahia.modules.jahiaoauth.service.JahiaOAuthCacheService" availability="mandatory"/>
+    <reference id="jcrTemplate" interface="org.jahia.api.content.JCRTemplate" availability="mandatory"/>
+    <reference id="JahiaUserManagerService" interface="org.jahia.api.usermanager.JahiaUserManagerService" availability="mandatory"/>
+    <reference id="settingsBean" interface="org.jahia.api.settings.SettingsBean"/>
 
     <bean id="jcrOAuthProviderMapperImpl" class="org.jahia.modules.jcroauthprovider.impl.JCROAuthProviderMapperImpl">
         <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
@@ -121,13 +122,13 @@
         <property name="jahiaOAuthCacheService" ref="jahiaOAuthCacheService"/>
         <property name="jcrOAuthProviderMapperImpl" ref="jcrOAuthProviderMapperImpl"/>
         <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
-        <property name="cookieAuthConfig" ref="cookieAuthConfig"/>
-        <property name="preserveSessionAttributes" value="${preserveSessionAttributesOnLogin:wemSessionId}" />
+        <property name="settingsBean" ref="settingsBean"/>
+        <property name="preserveSessionAttributes" value="${preserveSessionAttributesOnLogin:wemSessionId}"/>
     </bean>
 
-    <osgi:service ref="jcrOAuthProviderMapperImpl" interface="org.jahia.modules.jahiaoauth.service.MapperService">
-        <osgi:service-properties>
+    <service ref="jcrOAuthProviderMapperImpl" interface="org.jahia.modules.jahiaoauth.service.MapperService">
+        <service-properties>
             <entry key="mapperServiceName" value="jcrOAuthProvider"/>
-        </osgi:service-properties>
-    </osgi:service>
-</beans>
+        </service-properties>
+    </service>
+</blueprint>

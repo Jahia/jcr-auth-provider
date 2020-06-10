@@ -55,7 +55,7 @@ import org.jahia.services.SpringContextSingleton;
 import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.preferences.user.UserPreferencesHelper;
 import org.jahia.services.usermanager.JahiaUser;
-import org.jahia.services.usermanager.JahiaUserManagerService;
+import org.jahia.api.usermanager.JahiaUserManagerService;
 import org.jahia.settings.SettingsBean;
 import org.jahia.utils.LanguageCodeConverters;
 import org.jahia.utils.Patterns;
@@ -78,7 +78,7 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
     private JahiaUserManagerService jahiaUserManagerService;
     private JahiaOAuthService jahiaOAuthService;
     private JahiaOAuthCacheService jahiaOAuthCacheService;
-    private CookieAuthConfig cookieAuthConfig;
+    private SettingsBean settingsBean;
     private JCROAuthProviderMapperImpl jcrOAuthProviderMapperImpl;
 
     private String preserveSessionAttributes = null;
@@ -160,7 +160,7 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
             String useCookie = request.getParameter("useCookie");
             if ((useCookie != null) && ("on".equals(useCookie))) {
                 // the user has indicated he wants to use cookie authentication
-                CookieAuthValveImpl.createAndSendCookie(authContext, userNode, cookieAuthConfig);
+                CookieAuthValveImpl.createAndSendCookie(authContext, userNode, settingsBean.getCookieAuthConfig());
             }
 
             SpringContextSingleton.getInstance().publishEvent(new JCROAuthValve.LoginEvent(this, jahiaUser, authContext));
@@ -207,8 +207,8 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
         this.jahiaUserManagerService = jahiaUserManagerService;
     }
 
-    public void setCookieAuthConfig(CookieAuthConfig cookieAuthConfig) {
-        this.cookieAuthConfig = cookieAuthConfig;
+    public void setSettingsBean(SettingsBean settingsBean) {
+        this.settingsBean = settingsBean;
     }
 
     public void setPreserveSessionAttributes(String preserveSessionAttributes) {
