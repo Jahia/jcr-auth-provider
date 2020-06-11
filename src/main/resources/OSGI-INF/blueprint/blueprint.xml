@@ -8,6 +8,7 @@
     <reference id="jcrTemplate" interface="org.jahia.api.content.JCRTemplate" availability="mandatory"/>
     <reference id="JahiaUserManagerService" interface="org.jahia.api.usermanager.JahiaUserManagerService" availability="mandatory"/>
     <reference id="settingsBean" interface="org.jahia.api.settings.SettingsBean"/>
+    <reference id="authPipeline" interface="org.jahia.pipelines.Pipeline" filter="(type=authentication)"/>
 
     <bean id="jcrOAuthProviderMapperImpl" class="org.jahia.modules.jcroauthprovider.impl.JCROAuthProviderMapperImpl">
         <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
@@ -117,13 +118,13 @@
         </property>
     </bean>
 
-    <bean id="jcrOAuthValve" class="org.jahia.params.valves.jcroauth.JCROAuthValve">
+    <bean id="jcrOAuthValve" class="org.jahia.params.valves.jcroauth.JCROAuthValve" init-method="start" destroy-method="stop">
         <property name="jahiaOAuthService" ref="jahiaOAuthService"/>
         <property name="jahiaOAuthCacheService" ref="jahiaOAuthCacheService"/>
         <property name="jcrOAuthProviderMapperImpl" ref="jcrOAuthProviderMapperImpl"/>
         <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
         <property name="settingsBean" ref="settingsBean"/>
-        <property name="preserveSessionAttributes" value="${preserveSessionAttributesOnLogin:wemSessionId}"/>
+        <property name="authPipeline" ref="authPipeline"/>
     </bean>
 
     <service ref="jcrOAuthProviderMapperImpl" interface="org.jahia.modules.jahiaoauth.service.MapperService">
