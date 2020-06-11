@@ -44,19 +44,22 @@
 package org.jahia.params.valves.jcroauth;
 
 import org.jahia.api.Constants;
+import org.jahia.api.settings.SettingsBean;
+import org.jahia.api.usermanager.JahiaUserManagerService;
 import org.jahia.modules.jahiaoauth.service.JahiaOAuthCacheService;
 import org.jahia.modules.jahiaoauth.service.JahiaOAuthConstants;
 import org.jahia.modules.jahiaoauth.service.JahiaOAuthService;
 import org.jahia.modules.jcroauthprovider.impl.JCROAuthProviderMapperImpl;
-import org.jahia.params.valves.*;
+import org.jahia.osgi.FrameworkService;
+import org.jahia.params.valves.AuthValveContext;
+import org.jahia.params.valves.BaseAuthValve;
+import org.jahia.params.valves.CookieAuthValveImpl;
+import org.jahia.pipelines.Pipeline;
 import org.jahia.pipelines.PipelineException;
 import org.jahia.pipelines.valves.ValveContext;
-import org.jahia.services.SpringContextSingleton;
 import org.jahia.services.content.decorator.JCRUserNode;
 import org.jahia.services.preferences.user.UserPreferencesHelper;
 import org.jahia.services.usermanager.JahiaUser;
-import org.jahia.api.usermanager.JahiaUserManagerService;
-import org.jahia.settings.SettingsBean;
 import org.jahia.utils.LanguageCodeConverters;
 import org.jahia.utils.Patterns;
 import org.slf4j.Logger;
@@ -71,7 +74,7 @@ import java.util.Map;
 /**
  * @author dgaillard
  */
-public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
+public class JCROAuthValve extends BaseAuthValve {
     private static final Logger logger = LoggerFactory.getLogger(JCROAuthValve.class);
     private static String VALVE_RESULT = "login_valve_result";
 
@@ -80,15 +83,17 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
     private JahiaOAuthCacheService jahiaOAuthCacheService;
     private SettingsBean settingsBean;
     private JCROAuthProviderMapperImpl jcrOAuthProviderMapperImpl;
-
+    private Pipeline authPipeline;
     private String preserveSessionAttributes = null;
 
-    public class LoginEvent extends BaseLoginEvent {
-        private static final long serialVersionUID = 8966163034180261958L;
+    public void start() {
+        setId("jcrOAuthValve");
+        removeValve(authPipeline);
+        addValve(authPipeline, -1, null, null);
+    }
 
-        public LoginEvent(Object source, JahiaUser jahiaUser, AuthValveContext authValveContext) {
-            super (source, jahiaUser, authValveContext);
-        }
+    public void stop() {
+        removeValve(authPipeline);
     }
 
     @Override
@@ -152,7 +157,7 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
             authContext.getSessionFactory().setCurrentUser(jahiaUser);
 
             // do a switch to the user's preferred language
-            if (SettingsBean.getInstance().isConsiderPreferredLanguageAfterLogin()) {
+            if (settingsBean.isConsiderPreferredLanguageAfterLogin()) {
                 Locale preferredUserLocale = UserPreferencesHelper.getPreferredLocale(userNode, LanguageCodeConverters.resolveLocaleForGuest(request));
                 request.getSession().setAttribute(Constants.SESSION_LOCALE, preferredUserLocale);
             }
@@ -163,7 +168,11 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
                 CookieAuthValveImpl.createAndSendCookie(authContext, userNode, settingsBean.getCookieAuthConfig());
             }
 
-            SpringContextSingleton.getInstance().publishEvent(new JCROAuthValve.LoginEvent(this, jahiaUser, authContext));
+            Map<String, Object> m = new HashMap<>();
+            m.put("user", jahiaUser);
+            m.put("authContext", authContext);
+            m.put("source", this);
+            FrameworkService.sendEvent("org/jahia/usersgroups/login/LOGIN", m, false);
         } else {
             valveContext.invokeNext(context);
         }
@@ -209,13 +218,14 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
 
     public void setSettingsBean(SettingsBean settingsBean) {
         this.settingsBean = settingsBean;
-    }
-
-    public void setPreserveSessionAttributes(String preserveSessionAttributes) {
-        this.preserveSessionAttributes = preserveSessionAttributes;
+        this.preserveSessionAttributes = settingsBean.getString("preserveSessionAttributesOnLogin", "wemSessionId");
     }
 
     public void setJcrOAuthProviderMapperImpl(JCROAuthProviderMapperImpl jcrOAuthProviderMapperImpl) {
         this.jcrOAuthProviderMapperImpl = jcrOAuthProviderMapperImpl;
+    }
+
+    public void setAuthPipeline(Pipeline authPipeline) {
+        this.authPipeline = authPipeline;
     }
 }
