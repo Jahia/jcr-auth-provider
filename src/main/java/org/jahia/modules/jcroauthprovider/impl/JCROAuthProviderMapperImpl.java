@@ -83,6 +83,7 @@ public class JCROAuthProviderMapperImpl implements MapperService {
                 @Override
                 public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
                     String userId = (mapperResult.containsKey("j:email")) ? (String) ((Map<String, Object>) mapperResult.get("j:email")).get(JahiaOAuthConstants.PROPERTY_VALUE) : (String) mapperResult.get(JahiaOAuthConstants.CONNECTOR_NAME_AND_ID);
+                    mapperResult.put(JahiaOAuthConstants.SSO_LOGIN, userId);
 
                     JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
                     if (userNode == null) {
@@ -113,6 +114,7 @@ public class JCROAuthProviderMapperImpl implements MapperService {
             if (!entry.getKey().equals(JahiaOAuthConstants.TOKEN_DATA)
                     && !entry.getKey().equals(JahiaOAuthConstants.CONNECTOR_NAME_AND_ID)
                     && !entry.getKey().equals(JahiaOAuthConstants.PROPERTY_SITE_KEY)
+                    && !entry.getKey().equals(JahiaOAuthConstants.SSO_LOGIN)
                     && !entry.getKey().equals(JahiaOAuthConstants.CONNECTOR_SERVICE_NAME)) {
                 Map<String, Object> propertyInfo = (Map<String, Object>) entry.getValue();
                 if (propertyInfo.get(JahiaOAuthConstants.PROPERTY_VALUE_TYPE).equals("date")) {
