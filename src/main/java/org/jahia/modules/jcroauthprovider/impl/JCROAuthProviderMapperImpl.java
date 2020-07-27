@@ -87,8 +87,8 @@ public class JCROAuthProviderMapperImpl implements MapperService {
 
                     JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
                     if (userNode == null) {
-                        Properties properties = new Properties();
-                        userNode = jahiaUserManagerService.createUser(userId, "SHA-1:*", properties, session);
+                        Properties userProperties = new Properties();
+                        userNode = jahiaUserManagerService.createUser(userId, "SHA-1:*", userProperties, session);
                         updateUserProperties(userNode, mapperResult);
                         if (userNode == null) {
                             throw new RuntimeException("Cannot create user from access token");
@@ -97,7 +97,7 @@ public class JCROAuthProviderMapperImpl implements MapperService {
                         try {
                             updateUserProperties(userNode, mapperResult);
                         } catch (RepositoryException e) {
-                            logger.error("Could not set user property", e.getMessage());
+                            logger.error("Could not set user property {}", e.getMessage());
                         }
                     }
                     session.save();
