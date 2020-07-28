@@ -1,6 +1,10 @@
-# JCR OAuth Provider
+<a href="https://www.jahia.com/">
+    <img src="https://www.jahia.com/modules/jahiacom-templates/images/jahia-3x.png" alt="Jahia logo" title="Jahia" align="right" height="60" />
+</a>
 
-### INFORMATION
+JCR OAuth Provider
+======================
+
 This module works with Jahia OAuth and allows you to create(if needed) and connect an user as a result of an open authentication.
 
 ### MINIMAL REQUIREMENTS
@@ -27,3 +31,9 @@ Once you have downloaded Jahia OAuth and at least one connector:
 * Then in edit mode add the connection button of your connector to a page  
 * Publish your site
 * Your users can now connect using open authentication
+
+
+## Open-Source
+
+This is an Open-Source module, you can find more details about Open-Source @ Jahia [in this repository](https://github.com/Jahia/open-source).
+
