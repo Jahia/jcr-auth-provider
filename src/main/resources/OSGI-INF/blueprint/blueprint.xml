@@ -118,15 +118,6 @@
         </property>
     </bean>
 
-    <bean id="jcrOAuthValve" class="org.jahia.params.valves.jcroauth.JCROAuthValve" init-method="start" destroy-method="stop">
-        <property name="jahiaOAuthService" ref="jahiaOAuthService"/>
-        <property name="jahiaOAuthCacheService" ref="jahiaOAuthCacheService"/>
-        <property name="jcrOAuthProviderMapperImpl" ref="jcrOAuthProviderMapperImpl"/>
-        <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
-        <property name="settingsBean" ref="settingsBean"/>
-        <property name="authPipeline" ref="authPipeline"/>
-    </bean>
-
     <service ref="jcrOAuthProviderMapperImpl" interface="org.jahia.modules.jahiaoauth.service.MapperService">
         <service-properties>
             <entry key="mapperServiceName" value="jcrOAuthProvider"/>

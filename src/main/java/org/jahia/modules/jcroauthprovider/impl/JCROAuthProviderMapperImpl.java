@@ -83,11 +83,12 @@ public class JCROAuthProviderMapperImpl implements MapperService {
                 @Override
                 public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
                     String userId = (mapperResult.containsKey("j:email")) ? (String) ((Map<String, Object>) mapperResult.get("j:email")).get(JahiaOAuthConstants.PROPERTY_VALUE) : (String) mapperResult.get(JahiaOAuthConstants.CONNECTOR_NAME_AND_ID);
+                    mapperResult.put(JahiaOAuthConstants.SSO_LOGIN, userId);
 
                     JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
                     if (userNode == null) {
-                        Properties properties = new Properties();
-                        userNode = jahiaUserManagerService.createUser(userId, "SHA-1:*", properties, session);
+                        Properties userProperties = new Properties();
+                        userNode = jahiaUserManagerService.createUser(userId, "SHA-1:*", userProperties, session);
                         updateUserProperties(userNode, mapperResult);
                         if (userNode == null) {
                             throw new RuntimeException("Cannot create user from access token");
@@ -96,7 +97,7 @@ public class JCROAuthProviderMapperImpl implements MapperService {
                         try {
                             updateUserProperties(userNode, mapperResult);
                         } catch (RepositoryException e) {
-                            logger.error("Could not set user property", e.getMessage());
+                            logger.error("Could not set user property {}", e.getMessage());
                         }
                     }
                     session.save();
@@ -113,6 +114,7 @@ public class JCROAuthProviderMapperImpl implements MapperService {
             if (!entry.getKey().equals(JahiaOAuthConstants.TOKEN_DATA)
                     && !entry.getKey().equals(JahiaOAuthConstants.CONNECTOR_NAME_AND_ID)
                     && !entry.getKey().equals(JahiaOAuthConstants.PROPERTY_SITE_KEY)
+                    && !entry.getKey().equals(JahiaOAuthConstants.SSO_LOGIN)
                     && !entry.getKey().equals(JahiaOAuthConstants.CONNECTOR_SERVICE_NAME)) {
                 Map<String, Object> propertyInfo = (Map<String, Object>) entry.getValue();
                 if (propertyInfo.get(JahiaOAuthConstants.PROPERTY_VALUE_TYPE).equals("date")) {
