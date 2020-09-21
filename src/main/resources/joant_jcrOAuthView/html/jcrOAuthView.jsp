@@ -55,7 +55,7 @@
         </div>
 
         <div flex="35" layout="row" layout-align="start center">
-            <md-switch ng-model="jcrOAuthProvider.isActivate">
+            <md-switch ng-model="jcrOAuthProvider.enabled">
                 <span message-key="joant_jcrOAuthView.label.activate"></span>
             </md-switch>
 
@@ -65,7 +65,7 @@
                 <label message-key="joant_jcrOAuthView.label.fieldFromConnector"></label>
                 <md-select ng-model="jcrOAuthProvider.selectedPropertyFromConnector" ng-change="jcrOAuthProvider.addMapping()">
                     <md-optgroup>
-                        <md-option ng-repeat="connectorProperty in jcrOAuthProvider.connectorProperties | selectable:{mapping:jcrOAuthProvider.mapping,key:'connector'} | orderBy:jcrOAuthProvider.orderByConnector" ng-value="connectorProperty">
+                        <md-option ng-repeat="connectorProperty in jcrOAuthProvider.connectorProperties | orderBy:jcrOAuthProvider.orderByConnector" ng-value="connectorProperty">
                             {{ jcrOAuthProvider.getConnectorI18n(connectorProperty.name) }}
                         </md-option>
                     </md-optgroup>
