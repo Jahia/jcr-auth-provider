@@ -17,12 +17,12 @@
 <%--@elvariable id="currentResource" type="org.jahia.services.render.Resource"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
-<template:addResources type="javascript" resources="i18n/jcr-oauth-provider-i18n_${currentResource.locale}.js" var="i18nJSFile"/>
+<template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_${currentResource.locale}.js" var="i18nJSFile"/>
 <c:if test="${empty i18nJSFile}">
-    <template:addResources type="javascript" resources="i18n/jcr-oauth-provider-i18n_en.js"/>
+    <template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_en.js"/>
 </c:if>
 
-<template:addResources type="javascript" resources="jcr-oauth-provider/jcr-mapper-controller.js"/>
+<template:addResources type="javascript" resources="jcr-auth-provider/jcr-mapper-controller.js"/>
 
 <md-card ng-controller="JCROAuthProviderController as jcrOAuthProvider" class="ng-cloak">
     <div layout="row">

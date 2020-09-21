@@ -52,23 +52,23 @@
         <version>8.0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>jcr-oauth-provider</artifactId>
-    <version>2.1.0-SNAPSHOT</version>
+    <artifactId>jcr-auth-provider</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>JCR OAuth provider</name>
+    <name>JCR Authentication provider</name>
     <description>This is the custom module (JCR OAuth provider) for running on a Digital Experience Manager server.</description>
 
     <scm>
-        <connection>scm:git:git@github.com:Jahia/jcr-oauth-provider.git</connection>
-        <developerConnection>scm:git:git@github.com:Jahia/jcr-oauth-provider.git</developerConnection>
-        <url>https://github.com/Jahia/jcr-oauth-provider</url>
+        <connection>scm:git:git@github.com:Jahia/jcr-auth-provider.git</connection>
+        <developerConnection>scm:git:git@github.com:Jahia/jcr-auth-provider.git</developerConnection>
+        <url>https://github.com/Jahia/jcr-auth-provider</url>
         <tag>HEAD</tag>
     </scm>
 
     <properties>
         <jahia-depends>default,jahia-oauth</jahia-depends>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"</require-capability>
-        <jahia-module-signature>MC0CFQCN2NDKlaqGczmVkwLs2lPO8PUUxwIUVk859dgzgo0oD6ZwwEXh2K5Izys=</jahia-module-signature>
+        <jahia-module-signature>MCwCFDfqrezLP9ftMEd338gJvf46y2R/AhRVzjtWVAVTRkRtxbF5uJq4jAECHw==</jahia-module-signature>
     </properties>
 
     <distributionManagement>

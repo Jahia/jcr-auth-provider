@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <content xmlns:j="http://www.jahia.org/jahia/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0">
     <modules jcr:primaryType="jnt:modules">
-        <jcr-oauth-provider j:dependencies="default jahia-oauth"
+        <jcr-auth-provider j:dependencies="default jahia-oauth"
                              j:modulePriority="0"
                              j:moduleType="module"
                              j:title="JCR OAuth provider"
@@ -22,6 +22,6 @@
                     </jcr-oauth-view>
                 </templates>
                 
-            </jcr-oauth-provider>
+            </jcr-auth-provider>
     </modules>
 </content>
