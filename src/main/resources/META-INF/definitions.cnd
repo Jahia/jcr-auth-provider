@@ -3,6 +3,4 @@
 <joant = 'http://www.jahia.org/jahia/joa/nt/1.0'>
 <joamix = 'http://www.jahia.org/jahia/joa/mix/1.0'>
 
-[joant:jcrOAuthView] > jnt:content, joamix:oauthMapperView
-
-[joant:jcrOAuthSettings] > joamix:oauthMapperSettings
+[joant:jcrOAuthView] > jnt:content, jmix:authMapperSettingView

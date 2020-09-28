@@ -17,12 +17,12 @@
 <%--@elvariable id="currentResource" type="org.jahia.services.render.Resource"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
-<template:addResources type="javascript" resources="i18n/jcr-oauth-provider-i18n_${currentResource.locale}.js" var="i18nJSFile"/>
+<template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_${currentResource.locale}.js" var="i18nJSFile"/>
 <c:if test="${empty i18nJSFile}">
-    <template:addResources type="javascript" resources="i18n/jcr-oauth-provider-i18n_en.js"/>
+    <template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_en.js"/>
 </c:if>
 
-<template:addResources type="javascript" resources="jcr-oauth-provider/jcr-mapper-controller.js"/>
+<template:addResources type="javascript" resources="jcr-auth-provider/jcr-mapper-controller.js"/>
 
 <md-card ng-controller="JCROAuthProviderController as jcrOAuthProvider" class="ng-cloak">
     <div layout="row">
@@ -55,7 +55,7 @@
         </div>
 
         <div flex="35" layout="row" layout-align="start center">
-            <md-switch ng-model="jcrOAuthProvider.isActivate">
+            <md-switch ng-model="jcrOAuthProvider.enabled">
                 <span message-key="joant_jcrOAuthView.label.activate"></span>
             </md-switch>
 
@@ -65,7 +65,7 @@
                 <label message-key="joant_jcrOAuthView.label.fieldFromConnector"></label>
                 <md-select ng-model="jcrOAuthProvider.selectedPropertyFromConnector" ng-change="jcrOAuthProvider.addMapping()">
                     <md-optgroup>
-                        <md-option ng-repeat="connectorProperty in jcrOAuthProvider.connectorProperties | selectable:{mapping:jcrOAuthProvider.mapping,key:'connector'} | orderBy:jcrOAuthProvider.orderByConnector" ng-value="connectorProperty">
+                        <md-option ng-repeat="connectorProperty in jcrOAuthProvider.connectorProperties | orderBy:jcrOAuthProvider.orderByConnector" ng-value="connectorProperty" val="{{connectorProperty.name}}">
                             {{ jcrOAuthProvider.getConnectorI18n(connectorProperty.name) }}
                         </md-option>
                     </md-optgroup>
@@ -85,7 +85,7 @@
                         <label message-key="joant_jcrOAuthView.label.fieldFromMapper"></label>
                         <md-select ng-model="mapped.mapper" ng-model-options="{trackBy: '$value.name'}">
                             <md-optgroup>
-                                <md-option ng-repeat="mapperProperty in jcrOAuthProvider.mapperProperties | selectable:{mapping:jcrOAuthProvider.mapping,key:'mapper',selected:mapped.mapper} | typeMatch:mapped.connector.valueType | orderBy:jcrOAuthProvider.orderByMapper" ng-value="mapperProperty">
+                                <md-option ng-repeat="mapperProperty in jcrOAuthProvider.mapperProperties | selectable:{mapping:jcrOAuthProvider.mapping,key:'mapper',selected:mapped.mapper} | typeMatch:mapped.connector.valueType | orderBy:jcrOAuthProvider.orderByMapper" ng-value="mapperProperty" val="{{mapperProperty.name}}">
                                     {{ jcrOAuthProvider.getMapperI18n(mapperProperty.name) }} <span ng-if="mapperProperty.mandatory" class="joa-mandatory-property" message-key="joant_jcrOAuthView.label.mandatory"></span>
                                 </md-option>
                             </md-optgroup>
@@ -108,7 +108,7 @@
         </section>
 
         <md-card-actions layout="row" layout-align="end center">
-            <md-button class="md-accent" message-key="joant_jcrOAuthView.label.save"
+            <md-button class="md-accent" message-key="joant_jcrOAuthView.label.save" data-sel-role="saveMappings"
                        ng-click="jcrOAuthProvider.saveMapperSettings()">
             </md-button>
         </md-card-actions>
