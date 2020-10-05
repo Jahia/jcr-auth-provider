@@ -46,10 +46,7 @@ package org.jahia.modules.jcroauthprovider.impl;
 import org.apache.jackrabbit.util.ISO8601;
 import org.jahia.api.content.JCRTemplate;
 import org.jahia.api.usermanager.JahiaUserManagerService;
-import org.jahia.modules.jahiaauth.service.JahiaAuthConstants;
-import org.jahia.modules.jahiaauth.service.MappedProperty;
-import org.jahia.modules.jahiaauth.service.MappedPropertyInfo;
-import org.jahia.modules.jahiaauth.service.Mapper;
+import org.jahia.modules.jahiaauth.service.*;
 import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.decorator.JCRUserNode;
@@ -86,7 +83,7 @@ public class JCROAuthProviderMapperImpl implements Mapper {
     }
 
     @Override
-    public void executeMapper(final Map<String, MappedProperty> mapperResult) {
+    public void executeMapper(final Map<String, MappedProperty> mapperResult, MapperConfig config) {
         final MappedProperty userIdProp = mapperResult.get(JahiaAuthConstants.SSO_LOGIN);
         if (userIdProp == null) {
             return;

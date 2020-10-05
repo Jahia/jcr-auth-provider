@@ -57,7 +57,9 @@
             settingsService.setMapperMapping({
                 connectorServiceName: $routeParams.connectorServiceName,
                 mapperServiceName: 'jcrOAuthProvider',
-                enabled: vm.enabled,
+                properties: {
+                    enabled: vm.enabled,
+                },
                 mapping: vm.mapping
             }).success(function() {
                 helperService.successToast(i18nService.message('joant_jcrOAuthView.message.success.mappingSaved'));
