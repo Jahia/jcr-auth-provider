@@ -17,7 +17,7 @@
 <%--@elvariable id="currentResource" type="org.jahia.services.render.Resource"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
-<template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_${currentResource.locale}.js" var="i18nJSFile"/>
+<template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_${renderContext.UILocale}.js" var="i18nJSFile"/>
 <c:if test="${empty i18nJSFile}">
     <template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_en.js"/>
 </c:if>
