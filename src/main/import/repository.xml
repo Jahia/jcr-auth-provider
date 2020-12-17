@@ -4,9 +4,9 @@
         <jcr-auth-provider j:dependencies="default jahia-authentication"
                              j:modulePriority="0"
                              j:moduleType="module"
-                             j:title="JCR OAuth provider"
+                             j:title="JCR Auth provider"
                              jcr:primaryType="jnt:module">
-                
+
                 <portlets jcr:primaryType="jnt:portletFolder"/>
                 <files jcr:primaryType="jnt:folder"/>
                 <contents jcr:primaryType="jnt:contentFolder"/>
@@ -21,7 +21,7 @@
                         </pagecontent>
                     </jcr-oauth-view>
                 </templates>
-                
+
             </jcr-auth-provider>
     </modules>
 </content>
