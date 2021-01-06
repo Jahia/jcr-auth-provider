@@ -52,6 +52,8 @@
             <span message-key="joant_jcrOAuthView.message.description1"></span>
             <br />
             <span message-key="joant_jcrOAuthView.message.description2"></span>
+            <br />
+            <span message-key="joant_jcrOAuthView.message.description3"></span>
         </div>
 
         <div flex="35" layout="row" layout-align="start center">
