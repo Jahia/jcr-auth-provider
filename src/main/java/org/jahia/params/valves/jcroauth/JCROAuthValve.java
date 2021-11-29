@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -164,6 +165,13 @@ public class JCROAuthValve extends AutoRegisteredBaseAuthValve {
             }
 
             SpringContextSingleton.getInstance().publishEvent(new JCROAuthValve.LoginEvent(this, jahiaUser, authContext));
+
+            try {
+                // redirect to initial page with authentication done
+                authContext.getResponse().sendRedirect(request.getRequestURI());
+            } catch (IOException e) {
+                logger.error("Unable to redirect to {} after authentication", request.getRequestURI(), e);
+            }
         } else {
             valveContext.invokeNext(context);
         }
