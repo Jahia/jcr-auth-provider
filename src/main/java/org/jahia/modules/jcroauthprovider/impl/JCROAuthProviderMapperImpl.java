@@ -67,7 +67,8 @@ import java.util.Properties;
  */
 public class JCROAuthProviderMapperImpl implements Mapper {
     private static final Logger logger = LoggerFactory.getLogger(JCROAuthProviderMapperImpl.class);
-
+    private static final String PROP_CREATE_USER_AT_SITE_LEVEL = "createUserAtSiteLevel";
+    private static final String EMPTY_PASSWORD = "SHA-1:*";
     private JahiaUserManagerService jahiaUserManagerService;
     private JCRTemplate jcrTemplate;
     private List<MappedPropertyInfo> properties;
@@ -97,8 +98,14 @@ public class JCROAuthProviderMapperImpl implements Mapper {
 
                     JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
                     if (userNode == null) {
+                        final Boolean createUserAtSiteLevel = config.getBooleanProperty(PROP_CREATE_USER_AT_SITE_LEVEL);
                         Properties userProperties = new Properties();
-                        userNode = jahiaUserManagerService.createUser(userId, "SHA-1:*", userProperties, session);
+                        if (createUserAtSiteLevel) {
+                            final String siteKey = config.getSiteKey();
+                            userNode = jahiaUserManagerService.createUser(userId, siteKey, EMPTY_PASSWORD, userProperties, session);
+                        } else {
+                            userNode = jahiaUserManagerService.createUser(userId, EMPTY_PASSWORD, userProperties, session);
+                        }
                         updateUserProperties(userNode, mapperResult);
                         if (userNode == null) {
                             throw new RuntimeException("Cannot create user from access token");
