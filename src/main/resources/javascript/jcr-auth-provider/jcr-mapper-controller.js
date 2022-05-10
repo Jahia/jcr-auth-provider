@@ -110,7 +110,7 @@
             settingsService.getMapperMapping({
                 connectorServiceName: $routeParams.connectorServiceName,
                 mapperServiceName: 'jcrOAuthProvider',
-                properties: {"createUserAtSiteLevel": true}
+                properties: {'createUserAtSiteLevel': true}
             }).success(function (data) {
                 if (!angular.equals(data, {})) {
                     vm.enabled = data.enabled;
