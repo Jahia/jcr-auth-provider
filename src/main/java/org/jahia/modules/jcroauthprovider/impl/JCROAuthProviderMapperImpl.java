@@ -98,6 +98,7 @@ public class JCROAuthProviderMapperImpl implements Mapper {
 
                     JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
                     if (userNode == null) {
+                        // Will be false if the property is not defined/null
                         final Boolean createUserAtSiteLevel = config.getBooleanProperty(PROP_CREATE_USER_AT_SITE_LEVEL);
                         Properties userProperties = new Properties();
                         if (createUserAtSiteLevel) {
