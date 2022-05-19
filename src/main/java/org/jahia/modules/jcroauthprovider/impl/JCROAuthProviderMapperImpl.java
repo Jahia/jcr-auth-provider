@@ -67,7 +67,8 @@ import java.util.Properties;
  */
 public class JCROAuthProviderMapperImpl implements Mapper {
     private static final Logger logger = LoggerFactory.getLogger(JCROAuthProviderMapperImpl.class);
-
+    private static final String PROP_CREATE_USER_AT_SITE_LEVEL = "createUserAtSiteLevel";
+    private static final String EMPTY_PASSWORD = "SHA-1:*";
     private JahiaUserManagerService jahiaUserManagerService;
     private JCRTemplate jcrTemplate;
     private List<MappedPropertyInfo> properties;
@@ -95,14 +96,32 @@ public class JCROAuthProviderMapperImpl implements Mapper {
                 public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
                     String userId = (String) userIdProp.getValue();
 
+                    // Lookup user at global level
                     JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
+
+                    final String siteKey = config.getSiteKey();
+
+                    // Lookup user at site level
+                    if (userNode == null) {
+                        userNode = jahiaUserManagerService.lookupUser(userId, siteKey, session);
+                    }
+
+                    // If user is missing, we create it
                     if (userNode == null) {
                         Properties userProperties = new Properties();
-                        userNode = jahiaUserManagerService.createUser(userId, "SHA-1:*", userProperties, session);
-                        updateUserProperties(userNode, mapperResult);
+                        
+                        // Will be false if the property is not defined/null
+                        final Boolean createUserAtSiteLevel = config.getBooleanProperty(PROP_CREATE_USER_AT_SITE_LEVEL);
+                        if (createUserAtSiteLevel) {
+                            userNode = jahiaUserManagerService.createUser(userId, siteKey, EMPTY_PASSWORD, userProperties, session);
+                        } else {
+                            userNode = jahiaUserManagerService.createUser(userId, EMPTY_PASSWORD, userProperties, session);
+                        }
                         if (userNode == null) {
                             throw new RuntimeException("Cannot create user from access token");
                         }
+                        org.jahia.services.usermanager.JahiaUserManagerService.getInstance().clearNonExistingUsersCache();
+                        updateUserProperties(userNode, mapperResult);
                     } else {
                         try {
                             updateUserProperties(userNode, mapperResult);
