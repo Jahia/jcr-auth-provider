@@ -60,14 +60,14 @@
             <md-switch ng-model="jcrOAuthProvider.enabled">
                 <span message-key="joant_jcrOAuthView.label.activate"></span>
             </md-switch>
-            
+
             <md-switch ng-model="jcrOAuthProvider.createUserAtSiteLevel" ng-true-value="'true'" ng-false-value="'false'">
                 <span message-key="joant_jcrOAuthView.label.createUserAtSiteLevel"></span>
             </md-switch>
 
             <div flex="10"></div>
 
-            <md-input-container flex>
+            <md-input-container>
                 <label message-key="joant_jcrOAuthView.label.fieldFromConnector"></label>
                 <md-select ng-model="jcrOAuthProvider.selectedPropertyFromConnector" ng-change="jcrOAuthProvider.addMapping()">
                     <md-optgroup>
