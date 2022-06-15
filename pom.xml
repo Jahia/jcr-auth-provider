@@ -53,7 +53,7 @@
     </parent>
 
     <artifactId>jcr-auth-provider</artifactId>
-    <version>3.3.0-SNAPSHOT</version>
+    <version>3.2.1-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <name>JCR Authentication provider</name>
     <description>This is the custom module (JCR Auth provider) for running on a Digital Experience Manager server.</description>
@@ -68,7 +68,7 @@
     <properties>
         <jahia-depends>default,jahia-authentication</jahia-depends>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"</require-capability>
-        <jahia-module-signature>MCwCFGyoEoTSNt9YIJ/fUbgxUSPNV8znAhRW1Esr8So+4Xjj0ruT9SgfGQPzJA==</jahia-module-signature>
+        <jahia-module-signature>MCwCFDg0tmza60Zkf0sa+34yJMVnQRM8AhRULB48yBZ5GNmxxmVV8XThdKLl+A==</jahia-module-signature>
     </properties>
 
     <distributionManagement>
