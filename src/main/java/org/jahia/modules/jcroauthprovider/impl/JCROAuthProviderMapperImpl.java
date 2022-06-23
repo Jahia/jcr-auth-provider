@@ -1,11 +1,11 @@
-/*
+/**
  * ==========================================================================================
  * =                   JAHIA'S DUAL LICENSING - IMPORTANT INFORMATION                       =
  * ==========================================================================================
  *
  *                                 http://www.jahia.com
  *
- *     Copyright (C) 2002-2019 Jahia Solutions Group SA. All rights reserved.
+ *     Copyright (C) 2002-2022 Jahia Solutions Group SA. All rights reserved.
  *
  *     THIS FILE IS AVAILABLE UNDER TWO DIFFERENT LICENSES:
  *     1/GPL OR 2/JSEL
@@ -65,17 +65,18 @@ import java.util.*;
  */
 public class JCROAuthProviderMapperImpl implements MapperService {
     private static final Logger logger = LoggerFactory.getLogger(JCROAuthProviderMapperImpl.class);
-
+    private static final String EMPTY_PASSWORD = "SHA-1:*";
     private JahiaUserManagerService jahiaUserManagerService;
     private JCRTemplate jcrTemplate;
     private List<Map<String, Object>> properties;
     private String serviceName;
+    private Boolean createUserAtSiteLevel;
 
     @Override
     public List<Map<String, Object>> getProperties() {
         return properties;
     }
-
+    
     @Override
     public void executeMapper(final Map<String, Object> mapperResult) {
         try {
@@ -84,19 +85,36 @@ public class JCROAuthProviderMapperImpl implements MapperService {
                 public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
                     String userId = (mapperResult.containsKey("j:email")) ? (String) ((Map<String, Object>) mapperResult.get("j:email")).get(JahiaOAuthConstants.PROPERTY_VALUE) : (String) mapperResult.get(JahiaOAuthConstants.CONNECTOR_NAME_AND_ID);
 
+                    // Lookup user at global level
                     JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
+
+                    final String siteKey = mapperResult.get(JahiaOAuthConstants.PROPERTY_SITE_KEY).toString();
+
+                    // Lookup user at site level
                     if (userNode == null) {
-                        Properties properties = new Properties();
-                        userNode = jahiaUserManagerService.createUser(userId, "SHA-1:*", properties, session);
-                        updateUserProperties(userNode, mapperResult);
+                        userNode = jahiaUserManagerService.lookupUser(userId, siteKey, session);
+                    }
+
+                    // If user is missing, we create it
+                    if (userNode == null) {
+                        Properties userProperties = new Properties();
+
+                        if (createUserAtSiteLevel) {
+                            userNode = jahiaUserManagerService.createUser(userId, siteKey, EMPTY_PASSWORD, userProperties, session);
+                        } else {
+                            userNode = jahiaUserManagerService.createUser(userId, EMPTY_PASSWORD, userProperties, session);
+                        }
                         if (userNode == null) {
                             throw new RuntimeException("Cannot create user from access token");
                         }
+                        JahiaUserManagerService.getInstance().clearNonExistingUsersCache();
+                        updateUserProperties(userNode, mapperResult);
+                         
                     } else {
                         try {
                             updateUserProperties(userNode, mapperResult);
                         } catch (RepositoryException e) {
-                            logger.error("Could not set user property", e.getMessage());
+                            logger.error("Could not set user property {}", e.getMessage());
                         }
                     }
                     session.save();
@@ -146,5 +164,13 @@ public class JCROAuthProviderMapperImpl implements MapperService {
 
     public void setJcrTemplate(JCRTemplate jcrTemplate) {
         this.jcrTemplate = jcrTemplate;
+    }
+
+    public void setCreateUserAtSiteLevel(Boolean createUserAtSiteLevel) {
+        this.createUserAtSiteLevel = createUserAtSiteLevel;
+    }
+
+    public Boolean getCreateUserAtSiteLevel() {
+        return createUserAtSiteLevel;
     }
 }

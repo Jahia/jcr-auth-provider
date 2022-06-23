@@ -12,6 +12,7 @@
         <property name="jahiaUserManagerService" ref="JahiaUserManagerService"/>
         <property name="jcrTemplate" ref="jcrTemplate"/>
         <property name="serviceName" value="jcrOAuthProvider"/>
+        <property name="createUserAtSiteLevel" value="${jcr.oauth.provider.createUserAtSiteLevel:false}"/>
         <property name="properties">
             <list>
                 <map>
