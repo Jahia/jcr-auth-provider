@@ -74,14 +74,17 @@
                     </md-optgroup>
                 </md-select>
             </md-input-container>
-        </div flex="50">
+        </div>
 
 
         <section ng-show="jcrOAuthProvider.mapping.length > 0">
             <hr />
             <div layout="row" ng-repeat="mapped in jcrOAuthProvider.mapping track by $index" layout-align="start center">
-                <div flex="45">
-                    {{ jcrOAuthProvider.getConnectorI18n(mapped.connector.name) }}
+                <div flex="45" ng-if="mapped.editable">
+                    <input ng-model="mapped.connector.name"/>
+                </div>
+                <div flex="45" ng-if="!mapped.editable">
+                    {{ mapped.customMapper ? mapped.connector.name : jcrOAuthProvider.getConnectorI18n(mapped.connector.name) }}
                 </div>
                 <div flex="45" layout="row">
                     <md-input-container flex>
