@@ -55,12 +55,6 @@
                 return false;
             }
 
-            angular.forEach(vm.mapping, (mapping) => {
-                if (mapping.editable) {
-                    mapping.customMapper = true;
-                }
-                delete mapping.editable;
-            });
             settingsService.setMapperMapping({
                 connectorServiceName: $routeParams.connectorServiceName,
                 mapperServiceName: 'jcrOAuthProvider',
