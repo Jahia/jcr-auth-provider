@@ -84,7 +84,7 @@
                     <input ng-model="mapped.connector.name"/>
                 </div>
                 <div flex="45" ng-if="!mapped.editable">
-                    {{ mapped.customMapper ? mapped.connector.name : jcrOAuthProvider.getConnectorI18n(mapped.connector.name) }}
+                    {{ jcrOAuthProvider.getConnectorI18n(mapped.connector.name) }}
                 </div>
                 <div flex="45" layout="row">
                     <md-input-container flex>
