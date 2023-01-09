@@ -11,7 +11,7 @@
         // Variables
         vm.enabled = false;
         vm.createUserAtSiteLevel = false;
-        vm.connectorProperties = [];
+        vm.connectorProperties = [{name: 'other', valueType: 'string'}];
         vm.mapperProperties = [];
         vm.mapping = [];
         vm.selectedPropertyFromConnector = '';
@@ -73,7 +73,8 @@
         function addMapping() {
             if (vm.selectedPropertyFromConnector) {
                 vm.mapping.push({
-                    connector: vm.selectedPropertyFromConnector
+                    connector: angular.copy(vm.selectedPropertyFromConnector),
+                    editable: vm.selectedPropertyFromConnector.name === 'other'
                 });
                 vm.selectedPropertyFromConnector = '';
             }
@@ -84,7 +85,7 @@
         }
 
         function getConnectorI18n(value) {
-            return i18nService.message($routeParams.connectorServiceName + '.label.' + value);
+            return value === 'other' ? i18nService.message('jcrOAuthProvider.label.other') : i18nService.message($routeParams.connectorServiceName + '.label.' + value) ;
         }
 
         function getMapperI18n(value) {
@@ -124,7 +125,7 @@
             settingsService.getConnectorProperties({
                 connectorServiceName: $routeParams.connectorServiceName
             }).success(function(data) {
-                vm.connectorProperties = data.connectorProperties;
+                vm.connectorProperties = vm.connectorProperties.concat(data.connectorProperties);
             }).error(function(data) {
                 helperService.errorToast(i18nService.message('joant_jcrOAuthView.message.label') + ' ' + data.error);
             });
