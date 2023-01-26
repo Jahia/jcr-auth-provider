@@ -68,7 +68,7 @@
     <properties>
         <jahia-depends>default,jahia-authentication</jahia-depends>
         <require-capability>osgi.extender;filter:="(osgi.extender=org.jahia.bundles.blueprint.extender.config)"</require-capability>
-        <jahia-module-signature>MCwCFAewrb0IyBc+PIB4Kyqee+iD9PwUAhRW5JzzJinyTMwy36wQ+P0kZ4iolg==</jahia-module-signature>
+        <jahia-module-signature>MCwCFDD3cVWXDDItk1rWeWvJquD/CyHfAhRGZE+GeHJCSWTMzI5fJ0KSGWSeHQ==</jahia-module-signature>
     </properties>
 
     <distributionManagement>
