@@ -38,11 +38,6 @@
                     <property name="mandatory" value="false"/>
                 </bean>
                 <bean class="org.jahia.modules.jahiaauth.service.MappedPropertyInfo">
-                    <property name="name" value="j:birthDate"/>
-                    <property name="valueType" value="date"/>
-                    <property name="mandatory" value="false"/>
-                </bean>
-                <bean class="org.jahia.modules.jahiaauth.service.MappedPropertyInfo">
                     <property name="name" value="j:email"/>
                     <property name="valueType" value="email"/>
                     <property name="mandatory" value="false"/>

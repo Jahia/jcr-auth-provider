@@ -99,7 +99,7 @@
                         <md-select ng-if="mapped.editable" ng-model="mapped.mapper" ng-model-options="{trackBy: '$value.name'}">
                             <md-optgroup>
                                 <md-option ng-repeat="mapperProperty in jcrOAuthProvider.mapperProperties | selectable:{mapping:jcrOAuthProvider.mapping,key:'mapper',selected:mapped.mapper} | orderBy:jcrOAuthProvider.orderByMapper" ng-value="mapperProperty" val="{{mapperProperty.name}}">
-                                    {{ jcrOAuthProvider.getMapperI18n(mapperProperty.name) }} <span ng-if="mapperProperty.mandatory" class="joa-mandatory-property" message-key="joant_jcrOAuthView.label.mandatory"></span>
+                                    {{ jcrOAuthProvider.getMapperI18n(mapperProperty.name) }} (<span message-key="joant_jcrOAuthView.label.expectedType"></span> {{ mapperProperty.valueType }}) <span ng-if="mapperProperty.mandatory" class="joa-mandatory-property" message-key="joant_jcrOAuthView.label.mandatory"></span>
                                 </md-option>
                             </md-optgroup>
                         </md-select>
