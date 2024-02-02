@@ -7,7 +7,6 @@
                              j:title="JCR Auth provider"
                              jcr:primaryType="jnt:module">
 
-                <portlets jcr:primaryType="jnt:portletFolder"/>
                 <files jcr:primaryType="jnt:folder"/>
                 <contents jcr:primaryType="jnt:contentFolder"/>
                 <templates j:rootTemplatePath="/base" jcr:primaryType="jnt:templatesFolder">
