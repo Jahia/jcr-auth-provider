@@ -23,7 +23,7 @@ jobs:
     steps:
       # Providing the SSH PRIVATE of a user part of an admin group
       # is necessary to bypass PR checks
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ssh-key: ${{ secrets.GH_SSH_PRIVATE_KEY_JAHIACI }}
 
@@ -51,13 +51,12 @@ jobs:
         with:
           nexus_username: ${{ secrets.NEXUS_USERNAME }}
           nexus_password: ${{ secrets.NEXUS_PASSWORD }}
-          nexus_enterprise_releases_url: ${{ secrets.NEXUS_ENTERPRISE_RELEASES_URL }}
+          nexus_internal_releases_url: ${{ secrets.NEXUS_ENTERPRISE_RELEASES_URL }}
           force_signature: true
 
       - uses: jahia/jahia-modules-action/release-publication@v2
         name: Publish Module
         with:
-          module_id: jcr-auth-provider
           release_version: ${{ github.event.release.tag_name }}
           nexus_username: ${{ secrets.NEXUS_USERNAME }}
           nexus_password: ${{ secrets.NEXUS_PASSWORD }}

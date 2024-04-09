@@ -43,44 +43,62 @@
  */
 package org.jahia.modules.jcroauthprovider.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.util.ISO8601;
-import org.jahia.api.content.JCRTemplate;
 import org.jahia.api.usermanager.JahiaUserManagerService;
+import org.jahia.exceptions.JahiaRuntimeException;
 import org.jahia.modules.jahiaauth.service.*;
-import org.jahia.services.content.JCRCallback;
 import org.jahia.services.content.JCRSessionWrapper;
+import org.jahia.services.content.JCRTemplate;
 import org.jahia.services.content.decorator.JCRUserNode;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author dgaillard
  */
+@Component(service = Mapper.class, immediate = true)
 public class JCROAuthProviderMapperImpl implements Mapper {
     private static final Logger logger = LoggerFactory.getLogger(JCROAuthProviderMapperImpl.class);
     private static final String PROP_CREATE_USER_AT_SITE_LEVEL = "createUserAtSiteLevel";
-    private static final String EMPTY_PASSWORD = "SHA-1:*";
+    private static final String EMPTY_P = "SHA-1:*";
     private JahiaUserManagerService jahiaUserManagerService;
-    private JCRTemplate jcrTemplate;
-    private List<MappedPropertyInfo> properties;
-    private String serviceName;
+    List<MappedPropertyInfo> properties;
+
+    @Activate
+    public void activate(Map<String, ?> properties) {
+        String[] mappings = StringUtils.split((String) properties.get("mappings"), ",");
+        String[] mandatoryMappings = StringUtils.split((String) properties.get("mappings.mandatory"), ",");
+        List<MappedPropertyInfo> newProperties = new ArrayList<>();
+        // Fill the properties
+        for (String mapping : mappings) {
+            MappedPropertyInfo mappedPropertyInfo;
+            if (mapping.contains("|")) {
+                String name = StringUtils.substringBefore(mapping, "|");
+                String type = StringUtils.substringAfter(mapping, "|");
+                boolean mandatory = Arrays.asList(mandatoryMappings).contains(name);
+                mappedPropertyInfo = new MappedPropertyInfo(name, type, null, mandatory);
+            } else {
+                boolean mandatory = Arrays.asList(mandatoryMappings).contains(mapping);
+                mappedPropertyInfo = new MappedPropertyInfo(mapping, "string", null, mandatory);
+            }
+            newProperties.add(mappedPropertyInfo);
+        }
+        this.properties = newProperties;
+    }
 
     @Override
     public List<MappedPropertyInfo> getProperties() {
         return properties;
-    }
-
-    public void setProperties(List<MappedPropertyInfo> properties) {
-        this.properties = properties;
     }
 
     @Override
@@ -91,51 +109,52 @@ public class JCROAuthProviderMapperImpl implements Mapper {
         }
 
         try {
-            jcrTemplate.doExecuteWithSystemSession(new JCRCallback<Object>() {
-                @Override
-                public Object doInJCR(JCRSessionWrapper session) throws RepositoryException {
-                    String userId = (String) userIdProp.getValue();
-
-                    // Lookup user at global level
-                    JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
-
-                    final String siteKey = config.getSiteKey();
-
-                    // Lookup user at site level
-                    if (userNode == null) {
-                        userNode = jahiaUserManagerService.lookupUser(userId, siteKey, session);
-                    }
-
-                    // If user is missing, we create it
-                    if (userNode == null) {
-                        Properties userProperties = new Properties();
-                        
-                        // Will be false if the property is not defined/null
-                        final Boolean createUserAtSiteLevel = config.getBooleanProperty(PROP_CREATE_USER_AT_SITE_LEVEL);
-                        if (createUserAtSiteLevel) {
-                            userNode = jahiaUserManagerService.createUser(userId, siteKey, EMPTY_PASSWORD, userProperties, session);
-                        } else {
-                            userNode = jahiaUserManagerService.createUser(userId, EMPTY_PASSWORD, userProperties, session);
-                        }
-                        if (userNode == null) {
-                            throw new RuntimeException("Cannot create user from access token");
-                        }
-                        org.jahia.services.usermanager.JahiaUserManagerService.getInstance().clearNonExistingUsersCache();
-                        updateUserProperties(userNode, mapperResult);
-                    } else {
-                        try {
-                            updateUserProperties(userNode, mapperResult);
-                        } catch (RepositoryException e) {
-                            logger.error("Could not set user property {}", e.getMessage());
-                        }
-                    }
-                    session.save();
-                    return null;
-                }
+            JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {
+                executeMapperWithJCRSession(mapperResult, config, session, userIdProp);
+                return null;
             });
         } catch (RepositoryException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    private void executeMapperWithJCRSession(Map<String, MappedProperty> mapperResult, MapperConfig config, JCRSessionWrapper session, MappedProperty userIdProp) throws RepositoryException {
+        String userId = (String) userIdProp.getValue();
+
+        // Lookup user at global level
+        JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
+
+        final String siteKey = config.getSiteKey();
+
+        // Lookup user at site level
+        if (userNode == null) {
+            userNode = jahiaUserManagerService.lookupUser(userId, siteKey, session);
+        }
+
+        // If user is missing, we create it
+        if (userNode == null) {
+            Properties userProperties = new Properties();
+
+            // Will be false if the property is not defined/null
+            boolean createUserAtSiteLevel = config.getBooleanProperty(PROP_CREATE_USER_AT_SITE_LEVEL);
+            if (createUserAtSiteLevel) {
+                userNode = jahiaUserManagerService.createUser(userId, siteKey, EMPTY_P, userProperties, session);
+            } else {
+                userNode = jahiaUserManagerService.createUser(userId, EMPTY_P, userProperties, session);
+            }
+            if (userNode == null) {
+                throw new JahiaRuntimeException("Cannot create user from access token");
+            }
+            org.jahia.services.usermanager.JahiaUserManagerService.getInstance().clearNonExistingUsersCache();
+            updateUserProperties(userNode, mapperResult);
+        } else {
+            try {
+                updateUserProperties(userNode, mapperResult);
+            } catch (RepositoryException e) {
+                logger.error("Could not set user property {}", e.getMessage());
+            }
+        }
+        session.save();
     }
 
     private void updateUserProperties(JCRUserNode userNode, Map<String, MappedProperty> mapperResult) throws RepositoryException {
@@ -155,19 +174,8 @@ public class JCROAuthProviderMapperImpl implements Mapper {
         }
     }
 
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
+    @Reference
     public void setJahiaUserManagerService(JahiaUserManagerService jahiaUserManagerService) {
         this.jahiaUserManagerService = jahiaUserManagerService;
-    }
-
-    public void setJcrTemplate(JCRTemplate jcrTemplate) {
-        this.jcrTemplate = jcrTemplate;
     }
 }
