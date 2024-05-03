@@ -56,6 +56,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,19 @@ public class JCROAuthProviderMapperImpl implements Mapper {
 
     @Activate
     public void activate(Map<String, ?> properties) {
+        modified(properties);
+    }
+
+    @Modified
+    public void modified(Map<String, ?> properties) {
+        // At module startup, config is not read yet
+        if (properties == null || properties.get("mappings") == null) {
+            logger.info("JCR Auth provider started. No mappings defined.");
+            this.properties = new ArrayList<>();
+            return;
+        }
         String[] mappings = StringUtils.split((String) properties.get("mappings"), ",");
+        logger.info("JCR Auth provider config update. {} mappings updated.", mappings.length);
         String[] mandatoryMappings = StringUtils.split((String) properties.get("mappings.mandatory"), ",");
         List<MappedPropertyInfo> newProperties = new ArrayList<>();
         // Fill the properties
