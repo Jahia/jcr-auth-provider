@@ -69,7 +69,7 @@
     <properties>
         <jahia.plugin.version>6.9</jahia.plugin.version>
         <jahia-depends>jahia-authentication</jahia-depends>
-        <jahia-module-signature>MCwCFDD3cVWXDDItk1rWeWvJquD/CyHfAhRGZE+GeHJCSWTMzI5fJ0KSGWSeHQ==</jahia-module-signature>
+        <jahia-module-signature>MCwCFFpnRDPTwoJq1btYk1QDBG3y+7F/AhQ0oCRIH1udJmCJVMRmWMOGclCKiQ==</jahia-module-signature>
     </properties>
 
     <distributionManagement>
