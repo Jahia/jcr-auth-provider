@@ -47,7 +47,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.util.ISO8601;
 import org.jahia.api.usermanager.JahiaUserManagerService;
 import org.jahia.exceptions.JahiaRuntimeException;
-import org.jahia.modules.jahiaauth.service.*;
+import org.jahia.modules.jahiaauth.service.JahiaAuthConstants;
+import org.jahia.modules.jahiaauth.service.MappedProperty;
+import org.jahia.modules.jahiaauth.service.MappedPropertyInfo;
+import org.jahia.modules.jahiaauth.service.Mapper;
+import org.jahia.modules.jahiaauth.service.MapperConfig;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.JCRTemplate;
 import org.jahia.services.content.decorator.JCRUserNode;
@@ -62,7 +66,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author dgaillard
@@ -71,9 +80,13 @@ import java.util.*;
 public class JCROAuthProviderMapperImpl implements Mapper {
     private static final Logger logger = LoggerFactory.getLogger(JCROAuthProviderMapperImpl.class);
     private static final String PROP_CREATE_USER_AT_SITE_LEVEL = "createUserAtSiteLevel";
+    private static final String PROP_CREATE_USER_AT_SERVER_LEVEL = "createUserAtServerLevel";
     private static final String EMPTY_P = "SHA-1:*";
+
+    @Reference
     private JahiaUserManagerService jahiaUserManagerService;
-    List<MappedPropertyInfo> properties;
+
+    private List<MappedPropertyInfo> properties;
 
     @Activate
     public void activate(Map<String, ?> properties) {
@@ -150,16 +163,21 @@ public class JCROAuthProviderMapperImpl implements Mapper {
 
             // Will be false if the property is not defined/null
             boolean createUserAtSiteLevel = config.getBooleanProperty(PROP_CREATE_USER_AT_SITE_LEVEL);
+            boolean createUserAtServerLevel = config.getBooleanProperty(PROP_CREATE_USER_AT_SERVER_LEVEL);
             if (createUserAtSiteLevel) {
                 userNode = jahiaUserManagerService.createUser(userId, siteKey, EMPTY_P, userProperties, session);
-            } else {
+            } else if (createUserAtServerLevel) {
                 userNode = jahiaUserManagerService.createUser(userId, EMPTY_P, userProperties, session);
+            } else {
+                logger.info("User {} not found", userId);
             }
-            if (userNode == null) {
-                throw new JahiaRuntimeException("Cannot create user from access token");
+            if (createUserAtSiteLevel || createUserAtServerLevel) {
+                if (userNode == null) {
+                    throw new JahiaRuntimeException("Cannot create user from access token");
+                }
+                org.jahia.services.usermanager.JahiaUserManagerService.getInstance().clearNonExistingUsersCache();
+                updateUserProperties(userNode, mapperResult);
             }
-            org.jahia.services.usermanager.JahiaUserManagerService.getInstance().clearNonExistingUsersCache();
-            updateUserProperties(userNode, mapperResult);
         } else {
             try {
                 updateUserProperties(userNode, mapperResult);
@@ -185,10 +203,5 @@ public class JCROAuthProviderMapperImpl implements Mapper {
                 }
             }
         }
-    }
-
-    @Reference
-    public void setJahiaUserManagerService(JahiaUserManagerService jahiaUserManagerService) {
-        this.jahiaUserManagerService = jahiaUserManagerService;
     }
 }
