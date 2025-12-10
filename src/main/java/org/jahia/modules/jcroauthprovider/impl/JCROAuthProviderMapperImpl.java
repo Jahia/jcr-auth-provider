@@ -70,8 +70,13 @@ import java.util.*;
 @Component(service = Mapper.class, immediate = true)
 public class JCROAuthProviderMapperImpl implements Mapper {
     private static final Logger logger = LoggerFactory.getLogger(JCROAuthProviderMapperImpl.class);
-    private static final String PROP_CREATE_USER_AT_SITE_LEVEL = "createUserAtSiteLevel";
+    private static final String PROP_USER_CREATION_MODE = "userCreationMode";
+    private static final String USER_CREATION_MODE_SITE = "site";
+    private static final String USER_CREATION_MODE_SERVER = "server";
+    private static final String USER_CREATION_MODE_NONE = "none";
     private static final String EMPTY_P = "SHA-1:*";
+
+    @Reference
     private JahiaUserManagerService jahiaUserManagerService;
     List<MappedPropertyInfo> properties;
 
@@ -144,17 +149,30 @@ public class JCROAuthProviderMapperImpl implements Mapper {
             userNode = jahiaUserManagerService.lookupUser(userId, siteKey, session);
         }
 
-        // If user is missing, we create it
+        // Get user creation mode configuration
+        String userCreationMode = config.getProperty(PROP_USER_CREATION_MODE);
+        if (userCreationMode == null || userCreationMode.isEmpty()) {
+            userCreationMode = USER_CREATION_MODE_SERVER;
+        }
+
+        // If user is missing, we create it based on the mode
         if (userNode == null) {
+            if (USER_CREATION_MODE_NONE.equals(userCreationMode)) {
+                logger.debug("User {} not found and user creation is disabled (mode: none). Skipping user creation.", userId);
+                return;
+            }
+
             Properties userProperties = new Properties();
 
-            // Will be false if the property is not defined/null
-            boolean createUserAtSiteLevel = config.getBooleanProperty(PROP_CREATE_USER_AT_SITE_LEVEL);
-            if (createUserAtSiteLevel) {
+            if (USER_CREATION_MODE_SITE.equals(userCreationMode)) {
                 userNode = jahiaUserManagerService.createUser(userId, siteKey, EMPTY_P, userProperties, session);
+            } else if (USER_CREATION_MODE_SERVER.equals(userCreationMode)) {
+                userNode = jahiaUserManagerService.createUser(userId, EMPTY_P, userProperties, session);
             } else {
+                logger.warn("Invalid user creation mode: {}. Defaulting to server level.", userCreationMode);
                 userNode = jahiaUserManagerService.createUser(userId, EMPTY_P, userProperties, session);
             }
+
             if (userNode == null) {
                 throw new JahiaRuntimeException("Cannot create user from access token");
             }
@@ -185,10 +203,5 @@ public class JCROAuthProviderMapperImpl implements Mapper {
                 }
             }
         }
-    }
-
-    @Reference
-    public void setJahiaUserManagerService(JahiaUserManagerService jahiaUserManagerService) {
-        this.jahiaUserManagerService = jahiaUserManagerService;
     }
 }
