@@ -70,9 +70,9 @@ import java.util.*;
 @Component(service = Mapper.class, immediate = true)
 public class JCROAuthProviderMapperImpl implements Mapper {
     private static final Logger logger = LoggerFactory.getLogger(JCROAuthProviderMapperImpl.class);
-    private static final String PROP_USER_CREATION_MODE = "userCreationMode";
-    private static final String USER_CREATION_MODE_SITE = "site";
-    private static final String USER_CREATION_MODE_SERVER = "server";
+    private static final String CREATE_USER_AT_SITE_LEVEL = "createUserAtSiteLevel";
+    private static final String USER_CREATION_MODE_SITE = "true";
+    private static final String USER_CREATION_MODE_SERVER = "false";
     private static final String USER_CREATION_MODE_NONE = "none";
     private static final String EMPTY_P = "SHA-1:*";
 
@@ -150,7 +150,7 @@ public class JCROAuthProviderMapperImpl implements Mapper {
         }
 
         // Get user creation mode configuration
-        String userCreationMode = config.getProperty(PROP_USER_CREATION_MODE);
+        String userCreationMode = config.getProperty(CREATE_USER_AT_SITE_LEVEL);
         if (userCreationMode == null || userCreationMode.isEmpty()) {
             userCreationMode = USER_CREATION_MODE_SERVER;
         }

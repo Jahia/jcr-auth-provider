@@ -61,16 +61,16 @@
             </md-switch>
 
             <md-input-container>
-                <label message-key="joant_jcrOAuthView.label.userCreationMode"></label>
-                <md-select ng-model="jcrOAuthProvider.userCreationMode">
-                    <md-option value="server">
-                        <span message-key="joant_jcrOAuthView.label.userCreationMode.server"></span>
+                <label message-key="joant_jcrOAuthView.label.createUserAtSiteLevel"></label>
+                <md-select ng-model="jcrOAuthProvider.createUserAtSiteLevel">
+                    <md-option value="false">
+                        <span message-key="joant_jcrOAuthView.label.createUserAtSiteLevel.server"></span>
                     </md-option>
-                    <md-option value="site">
-                        <span message-key="joant_jcrOAuthView.label.userCreationMode.site"></span>
+                    <md-option value="true">
+                        <span message-key="joant_jcrOAuthView.label.createUserAtSiteLevel.site"></span>
                     </md-option>
                     <md-option value="none">
-                        <span message-key="joant_jcrOAuthView.label.userCreationMode.none"></span>
+                        <span message-key="joant_jcrOAuthView.label.createUserAtSiteLevel.none"></span>
                     </md-option>
                 </md-select>
             </md-input-container>
