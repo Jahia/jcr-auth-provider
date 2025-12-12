@@ -10,7 +10,7 @@
 
         // Variables
         vm.enabled = false;
-        vm.createUserAtSiteLevel = false;
+        vm.createUserAtSiteLevel = 'false';
         vm.connectorProperties = [{name: 'other', valueType: 'string'}];
         vm.mapperProperties = [];
         vm.mapping = [];
@@ -111,11 +111,11 @@
             settingsService.getMapperMapping({
                 connectorServiceName: $routeParams.connectorServiceName,
                 mapperServiceName: 'jcrOAuthProvider',
-                properties: {'createUserAtSiteLevel': true}
+                properties: {'createUserAtSiteLevel': 'false'}
             }).success(function (data) {
                 if (!angular.equals(data, {})) {
                     vm.enabled = data.enabled;
-                    vm.createUserAtSiteLevel = data.createUserAtSiteLevel,
+                    vm.createUserAtSiteLevel = data.createUserAtSiteLevel || 'false';
                     vm.mapping = data.mapping;
                 }
             }).error(function(data) {

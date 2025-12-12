@@ -60,9 +60,21 @@
                 <span message-key="joant_jcrOAuthView.label.activate"></span>
             </md-switch>
 
-            <md-switch ng-model="jcrOAuthProvider.createUserAtSiteLevel" ng-true-value="'true'" ng-false-value="'false'">
-                <span message-key="joant_jcrOAuthView.label.createUserAtSiteLevel"></span>
-            </md-switch>
+            <md-input-container>
+                <label message-key="joant_jcrOAuthView.label.createUserAtSiteLevel"></label>
+                <md-select ng-model="jcrOAuthProvider.createUserAtSiteLevel">
+                    <md-option value="false">
+                        <span message-key="joant_jcrOAuthView.label.createUserAtSiteLevel.server"></span>
+                    </md-option>
+                    <md-option value="true">
+                        <span message-key="joant_jcrOAuthView.label.createUserAtSiteLevel.site"></span>
+                    </md-option>
+                    <md-option value="none">
+                        <span message-key="joant_jcrOAuthView.label.createUserAtSiteLevel.none"></span>
+                    </md-option>
+                </md-select>
+            </md-input-container>
+
             <md-input-container>
                 <label message-key="joant_jcrOAuthView.label.fieldFromConnector"></label>
                 <md-select ng-model="jcrOAuthProvider.selectedPropertyFromConnector" ng-change="jcrOAuthProvider.addMapping()">
