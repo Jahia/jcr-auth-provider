@@ -61,7 +61,7 @@
             </md-switch>
 
             <md-input-container>
-                <label message-key="joant_jcrOAuthView.label.createUserAtSiteLevel"></label>
+                <p class="md-caption" message-key="joant_jcrOAuthView.label.createUserAtSiteLevel"></p>
                 <md-select ng-model="jcrOAuthProvider.createUserAtSiteLevel">
                     <md-option value="false">
                         <span message-key="joant_jcrOAuthView.label.createUserAtSiteLevel.server"></span>
