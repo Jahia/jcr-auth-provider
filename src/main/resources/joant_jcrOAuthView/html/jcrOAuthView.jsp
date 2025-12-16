@@ -56,11 +56,11 @@
         </div>
 
         <div layout="row" layout-align="space-between center">
-            <md-switch ng-model="jcrOAuthProvider.enabled">
+            <md-switch ng-model="jcrOAuthProvider.enabled" flex="50px">
                 <span message-key="joant_jcrOAuthView.label.activate"></span>
             </md-switch>
 
-            <md-input-container>
+            <md-input-container flex="100px" style="margin: 0 50px;">
                 <label message-key="joant_jcrOAuthView.label.createUserAtSiteLevel"></label>
                 <md-select ng-model="jcrOAuthProvider.createUserAtSiteLevel">
                     <md-option value="false">
@@ -75,7 +75,7 @@
                 </md-select>
             </md-input-container>
 
-            <md-input-container>
+            <md-input-container flex="auto">
                 <label message-key="joant_jcrOAuthView.label.fieldFromConnector"></label>
                 <md-select ng-model="jcrOAuthProvider.selectedPropertyFromConnector" ng-change="jcrOAuthProvider.addMapping()">
                     <md-optgroup>
