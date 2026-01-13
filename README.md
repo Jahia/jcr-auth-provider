@@ -8,8 +8,8 @@ JCR Auth Provider
 This module works with Jahia Authentication and allows you to create(if needed) and connect an user as a result of an open authentication.
 
 ### MINIMAL REQUIREMENTS
-* Jahia 8.0.1.0
-* Jahia Authentication module 1.0.0
+* Jahia 8.2.3.0 or higher
+* Jahia Authentication module 2.0.0
 * At least one connector module
 
 ### INSTALLATION
