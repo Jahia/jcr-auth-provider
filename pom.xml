@@ -68,7 +68,7 @@
 
     <properties>
         <jahia-depends>jahia-authentication</jahia-depends>
-        <jahia-module-signature>MC0CFGyoZM43PHWTj0NWEOf3V7xWWzn5AhUAkg3R05sotRuedCoI2leebiXxeI0=</jahia-module-signature>
+        <jahia-module-signature>MCwCFD0apFxtOL2a1qcHo83Rnjm6mQ1kAhQPWEiVGr0piwjBrrkpZKdn3axZ6w==</jahia-module-signature>
     </properties>
 
     <distributionManagement>
