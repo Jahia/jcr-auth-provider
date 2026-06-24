@@ -16,10 +16,37 @@
 <%--@elvariable id="currentResource" type="org.jahia.services.render.Resource"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
-<template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_${renderContext.UILocale}.js" var="i18nJSFile"/>
-<c:if test="${empty i18nJSFile}">
-    <template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_en.js"/>
-</c:if>
+<%--
+    The i18n dictionary is loaded with an explicit, version-based cache-busting query parameter
+    instead of through template:addResources. Resources added via template:addResources are only
+    versioned/aggregated in live mode; in edit and server-settings mode (where this view renders)
+    the generated URL is identical from one module version to the next. As a result, after a module
+    upgrade browsers keep serving the previously cached dictionary, which lacks the new translation
+    keys, and labels show up as raw message IDs until the browser cache is cleared (issue #84).
+    Appending the module version forces browsers to fetch the up-to-date dictionary on every upgrade.
+--%>
+<c:set var="jcrOAuthUILocale" value="${renderContext.UILocale}"/>
+<%
+    Object jcrOAuthScript = request.getAttribute("script");
+    String jcrOAuthDictionary = "javascript/i18n/jcr-auth-provider-i18n_en.js";
+    String jcrOAuthVersion = "";
+    if (jcrOAuthScript != null) {
+        org.jahia.services.render.View jcrOAuthView =
+                ((org.jahia.services.render.scripting.Script) jcrOAuthScript).getView();
+        jcrOAuthVersion = String.valueOf(jcrOAuthView.getModuleVersion());
+        String localizedDictionary = "javascript/i18n/jcr-auth-provider-i18n_"
+                + pageContext.getAttribute("jcrOAuthUILocale") + ".js";
+        if (jcrOAuthView.getModule().getBundle().getEntry("/" + localizedDictionary) != null) {
+            jcrOAuthDictionary = localizedDictionary;
+        }
+    }
+    pageContext.setAttribute("jcrOAuthDictionary", jcrOAuthDictionary);
+    pageContext.setAttribute("jcrOAuthVersion", jcrOAuthVersion);
+%>
+<c:url value="${url.currentModule}/${jcrOAuthDictionary}" var="jcrOAuthDictionaryUrl">
+    <c:param name="v" value="${jcrOAuthVersion}"/>
+</c:url>
+<script type="text/javascript" src="${jcrOAuthDictionaryUrl}"></script>
 
 <template:addResources type="javascript" resources="jcr-auth-provider/jcr-mapper-controller.js"/>
 
