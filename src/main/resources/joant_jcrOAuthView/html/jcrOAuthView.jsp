@@ -17,38 +17,20 @@
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
 <%--
-    The i18n dictionary is loaded with an explicit, version-based cache-busting query parameter
-    instead of through template:addResources. Resources added via template:addResources are only
-    versioned/aggregated in live mode; in edit and server-settings mode (where this view renders)
-    the generated URL is identical from one module version to the next. As a result, after a module
-    upgrade browsers keep serving the previously cached dictionary, which lacks the new translation
-    keys, and labels show up as raw message IDs until the browser cache is cleared (issue #84).
-    Appending the module version forces browsers to fetch the up-to-date dictionary on every upgrade.
+    The module scripts are added through template:addResources with the module version appended as
+    a cache-busting parameter. template:addResources only fingerprints assets in live mode, so in
+    edit/settings mode (where this view is rendered) the generated URL is identical from one module
+    version to the next. After a module upgrade browsers therefore keep serving the previously
+    cached files: the stale i18n dictionary misses the newly added keys and labels show up as raw
+    message IDs until the browser cache is cleared (issue #84). Passing an absolute path (prefixed
+    with the context path) lets us append ?${moduleVersion}, which changes on every release and
+    forces browsers to reload the scripts after an upgrade. The supported i18n languages match the
+    jcr-auth-provider_*.properties files; any other UI locale falls back to English.
 --%>
-<c:set var="jcrOAuthUILocale" value="${renderContext.UILocale}"/>
-<%
-    Object jcrOAuthScript = request.getAttribute("script");
-    String jcrOAuthDictionary = "javascript/i18n/jcr-auth-provider-i18n_en.js";
-    String jcrOAuthVersion = "";
-    if (jcrOAuthScript != null) {
-        org.jahia.services.render.View jcrOAuthView =
-                ((org.jahia.services.render.scripting.Script) jcrOAuthScript).getView();
-        jcrOAuthVersion = String.valueOf(jcrOAuthView.getModuleVersion());
-        String localizedDictionary = "javascript/i18n/jcr-auth-provider-i18n_"
-                + pageContext.getAttribute("jcrOAuthUILocale") + ".js";
-        if (jcrOAuthView.getModule().getBundle().getEntry("/" + localizedDictionary) != null) {
-            jcrOAuthDictionary = localizedDictionary;
-        }
-    }
-    pageContext.setAttribute("jcrOAuthDictionary", jcrOAuthDictionary);
-    pageContext.setAttribute("jcrOAuthVersion", jcrOAuthVersion);
-%>
-<c:url value="${url.currentModule}/${jcrOAuthDictionary}" var="jcrOAuthDictionaryUrl">
-    <c:param name="v" value="${jcrOAuthVersion}"/>
-</c:url>
-<script type="text/javascript" src="${jcrOAuthDictionaryUrl}"></script>
-
-<template:addResources type="javascript" resources="jcr-auth-provider/jcr-mapper-controller.js"/>
+<c:set var="moduleVersion" value="${script.view.moduleVersion}"/>
+<c:set var="i18nLang" value="${(renderContext.UILocale.language eq 'de' or renderContext.UILocale.language eq 'fr') ? renderContext.UILocale.language : 'en'}"/>
+<template:addResources type="javascript" resources="${pageContext.request.contextPath}${url.currentModule}/javascript/i18n/jcr-auth-provider-i18n_${i18nLang}.js?${moduleVersion}"/>
+<template:addResources type="javascript" resources="${pageContext.request.contextPath}${url.currentModule}/javascript/jcr-auth-provider/jcr-mapper-controller.js?${moduleVersion}"/>
 
 <md-card ng-controller="JCROAuthProviderController as jcrOAuthProvider" class="ng-cloak">
     <div layout="row">
