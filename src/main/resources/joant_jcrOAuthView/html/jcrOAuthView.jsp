@@ -16,21 +16,10 @@
 <%--@elvariable id="currentResource" type="org.jahia.services.render.Resource"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
-<%--
-    The module scripts are added through template:addResources with the module version appended as
-    a cache-busting parameter. template:addResources only fingerprints assets in live mode, so in
-    edit/settings mode (where this view is rendered) the generated URL is identical from one module
-    version to the next. After a module upgrade browsers therefore keep serving the previously
-    cached files: the stale i18n dictionary misses the newly added keys and labels show up as raw
-    message IDs until the browser cache is cleared (issue #84). Passing an absolute path (prefixed
-    with the context path) lets us append ?${moduleVersion}, which changes on every release and
-    forces browsers to reload the scripts after an upgrade. The supported i18n languages match the
-    jcr-auth-provider_*.properties files; any other UI locale falls back to English.
---%>
 <c:set var="moduleVersion" value="${script.view.moduleVersion}"/>
 <c:set var="i18nLang" value="${(renderContext.UILocale.language eq 'de' or renderContext.UILocale.language eq 'fr') ? renderContext.UILocale.language : 'en'}"/>
 <template:addResources type="javascript" resources="${pageContext.request.contextPath}${url.currentModule}/javascript/i18n/jcr-auth-provider-i18n_${i18nLang}.js?${moduleVersion}"/>
-<template:addResources type="javascript" resources="${pageContext.request.contextPath}${url.currentModule}/javascript/jcr-auth-provider/jcr-mapper-controller.js?${moduleVersion}"/>
+<template:addResources type="javascript" resources="${pageContext.request.contextPath}${url.currentModule}/javascript/jcr-auth-provider/jcr-mapper-controller.js"/>
 
 <md-card ng-controller="JCROAuthProviderController as jcrOAuthProvider" class="ng-cloak">
     <div layout="row">
