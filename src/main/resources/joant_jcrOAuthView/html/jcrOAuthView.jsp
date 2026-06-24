@@ -17,9 +17,12 @@
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
 <c:set var="moduleVersion" value="${script.view.moduleVersion}"/>
-<c:set var="i18nLang" value="${(renderContext.UILocale.language eq 'de' or renderContext.UILocale.language eq 'fr') ? renderContext.UILocale.language : 'en'}"/>
-<template:addResources type="javascript" resources="${pageContext.request.contextPath}${url.currentModule}/javascript/i18n/jcr-auth-provider-i18n_${i18nLang}.js?${moduleVersion}"/>
-<template:addResources type="javascript" resources="${pageContext.request.contextPath}${url.currentModule}/javascript/jcr-auth-provider/jcr-mapper-controller.js"/>
+<template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_${renderContext.UILocale}.js?${moduleVersion}" var="i18nJSFile"/>
+<c:if test="${empty i18nJSFile}">
+    <template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_en.js?${moduleVersion}"/>
+</c:if>
+
+<template:addResources type="javascript" resources="jcr-auth-provider/jcr-mapper-controller.js"/>
 
 <md-card ng-controller="JCROAuthProviderController as jcrOAuthProvider" class="ng-cloak">
     <div layout="row">
