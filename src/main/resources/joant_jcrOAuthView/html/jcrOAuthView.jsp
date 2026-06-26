@@ -18,7 +18,7 @@
 
 <template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_${renderContext.UILocale}.js" var="i18nJSFile"/>
 <c:if test="${empty i18nJSFile}">
-    <template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_en.js" />
+    <template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_en.js"/>
 </c:if>
 
 <template:addResources type="javascript" resources="jcr-auth-provider/jcr-mapper-controller.js"/>
