@@ -16,10 +16,9 @@
 <%--@elvariable id="currentResource" type="org.jahia.services.render.Resource"--%>
 <%--@elvariable id="url" type="org.jahia.services.render.URLGenerator"--%>
 
-<c:set var="moduleVersion" value="${script.view.moduleVersion}"/>
-<template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_${renderContext.UILocale}.js?${moduleVersion}" var="i18nJSFile"/>
+<template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_${renderContext.UILocale}.js" var="i18nJSFile"/>
 <c:if test="${empty i18nJSFile}">
-    <template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_en.js?${moduleVersion}"/>
+    <template:addResources type="javascript" resources="i18n/jcr-auth-provider-i18n_en.js"/>
 </c:if>
 
 <template:addResources type="javascript" resources="jcr-auth-provider/jcr-mapper-controller.js"/>
