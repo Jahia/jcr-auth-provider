@@ -78,6 +78,9 @@ public class JCROAuthProviderMapperImpl implements Mapper {
 
     @Reference
     private JahiaUserManagerService jahiaUserManagerService;
+
+    @Reference
+    private SsoIdentityLinkService ssoIdentityLinkService;
     List<MappedPropertyInfo> properties;
 
     @Activate
@@ -125,10 +128,18 @@ public class JCROAuthProviderMapperImpl implements Mapper {
         if (userIdProp == null) {
             return;
         }
+        final MappedProperty subjectProp = mapperResult.get(JahiaAuthConstants.SSO_SUBJECT);
+        if (subjectProp == null || subjectProp.getValue() == null) {
+            // The account is resolved by the identity the provider asserted, so there is nothing to
+            // resolve and nothing to create. The framework already said why it read no subject.
+            logger.warn("This sign-in states no asserted identity, so no account is resolved or created.");
+            return;
+        }
 
         try {
             JCRTemplate.getInstance().doExecuteWithSystemSession(session -> {
-                executeMapperWithJCRSession(mapperResult, config, session, userIdProp);
+                executeMapperWithJCRSession(mapperResult, config, session, userIdProp,
+                        String.valueOf(subjectProp.getValue()));
                 return null;
             });
         } catch (RepositoryException e) {
@@ -136,17 +147,33 @@ public class JCROAuthProviderMapperImpl implements Mapper {
         }
     }
 
-    private void executeMapperWithJCRSession(Map<String, MappedProperty> mapperResult, MapperConfig config, JCRSessionWrapper session, MappedProperty userIdProp) throws RepositoryException {
+    /**
+     * Resolves the account of one sign-in, and creates it the first time.
+     * <p>
+     * The account is read by the identity the provider asserted, and never by its name. An account
+     * found by its name carries no link for this connector, so it is not one this mapper created for
+     * this subject: it may be a local account, or one from another directory.
+     * <p>
+     * A name already taken therefore refuses the sign-in and says what an administrator has to do.
+     * Linking such an account is an act an already authenticated session performs, and it writes a
+     * second link rather than claiming the first.
+     */
+    private void executeMapperWithJCRSession(Map<String, MappedProperty> mapperResult, MapperConfig config,
+            JCRSessionWrapper session, MappedProperty userIdProp, String subject) throws RepositoryException {
         String userId = (String) userIdProp.getValue();
-
-        // Lookup user at global level
-        JCRUserNode userNode = jahiaUserManagerService.lookupUser(userId, session);
-
+        String connectorName = config.getConnectorName();
         final String siteKey = config.getSiteKey();
 
-        // Lookup user at site level
-        if (userNode == null) {
-            userNode = jahiaUserManagerService.lookupUser(userId, siteKey, session);
+        JCRUserNode userNode = ssoIdentityLinkService.resolveAccount(connectorName, subject, session);
+
+        if (userNode != null) {
+            try {
+                updateUserProperties(userNode, mapperResult);
+            } catch (RepositoryException e) {
+                logger.error("Could not set user property {}", e.getMessage());
+            }
+            session.save();
+            return;
         }
 
         // Get user creation mode configuration
@@ -154,43 +181,66 @@ public class JCROAuthProviderMapperImpl implements Mapper {
         if (userCreationMode == null || userCreationMode.isEmpty()) {
             userCreationMode = USER_CREATION_MODE_SERVER;
         }
-
-        // If user is missing, we create it based on the mode
-        if (userNode == null) {
-            if (USER_CREATION_MODE_NONE.equals(userCreationMode)) {
-                logger.debug("User {} not found and user creation is disabled (mode: none). Skipping user creation.", userId);
-                return;
-            }
-
-            Properties userProperties = new Properties();
-
-            if (USER_CREATION_MODE_SITE.equals(userCreationMode)) {
-                userNode = jahiaUserManagerService.createUser(userId, siteKey, EMPTY_P, userProperties, session);
-            } else if (USER_CREATION_MODE_SERVER.equals(userCreationMode)) {
-                userNode = jahiaUserManagerService.createUser(userId, EMPTY_P, userProperties, session);
-            } else {
-                logger.warn("Invalid user creation mode: {}. Defaulting to server level.", userCreationMode);
-                userNode = jahiaUserManagerService.createUser(userId, EMPTY_P, userProperties, session);
-            }
-
-            if (userNode == null) {
-                throw new JahiaRuntimeException("Cannot create user from access token");
-            }
-            org.jahia.services.usermanager.JahiaUserManagerService.getInstance().clearNonExistingUsersCache();
-            updateUserProperties(userNode, mapperResult);
-        } else {
-            try {
-                updateUserProperties(userNode, mapperResult);
-            } catch (RepositoryException e) {
-                logger.error("Could not set user property {}", e.getMessage());
-            }
+        if (USER_CREATION_MODE_NONE.equals(userCreationMode)) {
+            logger.debug("Connector {} asserted an identity no account carries, and user creation is"
+                    + " disabled (mode: none). No account is created.", connectorName);
+            return;
         }
+
+        if (isNameTaken(userId, siteKey, session)) {
+            logger.error("No account is created for connector {}: an account named {} already exists and"
+                    + " carries no link for that connector, so this framework did not create it for the"
+                    + " asserted identity. An administrator has to link that account or the deployment"
+                    + " has to name accounts differently.", connectorName, userId);
+            return;
+        }
+
+        Properties userProperties = new Properties();
+
+        if (USER_CREATION_MODE_SITE.equals(userCreationMode)) {
+            userNode = jahiaUserManagerService.createUser(userId, siteKey, EMPTY_P, userProperties, session);
+        } else if (USER_CREATION_MODE_SERVER.equals(userCreationMode)) {
+            userNode = jahiaUserManagerService.createUser(userId, EMPTY_P, userProperties, session);
+        } else {
+            logger.warn("Invalid user creation mode: {}. Defaulting to server level.", userCreationMode);
+            userNode = jahiaUserManagerService.createUser(userId, EMPTY_P, userProperties, session);
+        }
+
+        if (userNode == null) {
+            throw new JahiaRuntimeException("Cannot create user from access token");
+        }
+        org.jahia.services.usermanager.JahiaUserManagerService.getInstance().clearNonExistingUsersCache();
+        try {
+            // The link is written before the properties, so an account this mapper cannot link is not
+            // left behind carrying a profile. The session is saved once, so a refused link saves nothing.
+            ssoIdentityLinkService.linkAccount(userNode, connectorName, subject, session);
+        } catch (JahiaAuthException e) {
+            logger.error("No account is created for connector {}: {}", connectorName, e.getMessage());
+            return;
+        }
+        updateUserProperties(userNode, mapperResult);
         session.save();
+    }
+
+    /**
+     * Whether an account of this name already exists, at server level or under the site.
+     * <p>
+     * Both trees are read, and in that order, because the core reads the global tree before the tree of
+     * a site. An account at either level answers a lookup by name.
+     */
+    private boolean isNameTaken(String userId, String siteKey, JCRSessionWrapper session) {
+        return jahiaUserManagerService.lookupUser(userId, session) != null
+                || jahiaUserManagerService.lookupUser(userId, siteKey, session) != null;
     }
 
     private void updateUserProperties(JCRUserNode userNode, Map<String, MappedProperty> mapperResult) throws RepositoryException {
         for (Map.Entry<String, MappedProperty> entry : mapperResult.entrySet()) {
-            if (!entry.getKey().equals(JahiaAuthConstants.SITE_KEY) && !entry.getKey().equals(JahiaAuthConstants.SSO_LOGIN)) {
+            // The subject travels beside the login id and is not a profile property. It lives in the
+            // link, whose access control list grants nobody, and a property of a user node is readable
+            // by whoever reads the user node.
+            if (!entry.getKey().equals(JahiaAuthConstants.SITE_KEY)
+                    && !entry.getKey().equals(JahiaAuthConstants.SSO_LOGIN)
+                    && !entry.getKey().equals(JahiaAuthConstants.SSO_SUBJECT)) {
                 MappedProperty property = entry.getValue();
                 if (property.getInfo().getValueType().equals("date")) {
                     DateTimeFormatter dtf = DateTimeFormat.forPattern(property.getInfo().getFormat());
